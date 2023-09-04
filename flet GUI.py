@@ -74,3 +74,9 @@ def main(page: flet.Page):
     page.add(file_picker, file_name, file_path, f, t)
     
 flet.app(target=main)
+
+
+
+
+
+
