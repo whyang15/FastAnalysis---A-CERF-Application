@@ -22,7 +22,7 @@ def seq_dictionary_generator(file_cont):
         file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1:pos+2]))
 
     return file_dictionary
-
+## Work in progress
 def header_parser(header):
     modifiers =['acronym', 'altitude', 'anamorph', 'authority', 'bio-material', 'biotype', 'biovar', 'breed', 'cell-line', 'cell-type', 'chemovar', 'chromosome', 'clone', 'clone-lib', 'collected-by', 'collection-date', 'common', 'country', 'cultivar', 'culture-collection', 'dev-stage', 'ecotype', 'endogenous-virus-name', 'forma', 'forma-specialis', 'fwd-PCR-primer-name', 'fwd-PCR-primer-seq', 'genotype', 'group', 'haplogroup', 'haplotype', 'host', 'identified-by', 'isolate', 'isolation-source', 'lab-host', 'lat-lon', 'linkage-group', 'map', 'mating-type', 'note', 'organism', 'pathovar', 'plasmid-name', 'plastid-name', 'pop-variant', 'rev-PCR-primer-name', 'rev-PCR-primer-seq', 'segment', 'serogroup', 'serotype', 'serovar', 'sex', 'specimen-voucher', 'strain', 'sub-species', 'subclone', 'subgroup', 'substrain', 'subtype', 'synonym', 'teleomorph', 'tissue-lib', 'tissue-type', 'type', 'variety']
     mod_pos_index = {}
