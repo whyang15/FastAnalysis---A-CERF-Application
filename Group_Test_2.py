@@ -123,7 +123,7 @@ def protien_sequence_generator(codon_list):
                 'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
                 'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
                 'TAC':'Y', 'TAT':'Y', 'TAA':'_', 'TAG':'_',
-                'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'}
+                'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'}#Include unique fasta codes
     prot_sequence =''    
     for pos in range (0, len(codon_list),4):
         codon = codon_list[pos:pos+3]
@@ -133,45 +133,45 @@ def protien_sequence_generator(codon_list):
 
 
 seq_dictionary = seq_dictionary_generator(file_read())
-##print('Number of Entries in File: {}'.format(number_of_entries_finder(seq_dictionary)))
+print('Number of Entries in File: {}'.format(number_of_entries_finder(seq_dictionary)))
 for key in seq_dictionary:
     header_info = header_parser(key)
     print(header_info)
-##    dna = seq_dictionary[key]
-##    dna_contents = dna_content(dna)
-##    print('The sequence length is {} bp\nThe number of A is {}\nThe number of T is {}\nThe number of G is {}\nThe number of C is {}\nThe number of AT paris is {}\nThe number of GC pairs is {}'
-##          .format(dna_length(dna),dna_contents[0],dna_contents[1],dna_contents[2],dna_contents[3],dna_contents[4],dna_contents[5]))
-##    rsDNA = reverse_strand(dna)
-##    csDNA = complement_strand(dna)
-##    rcsDNA = reverse_complement_strand(dna)
-##
-##    print('DNA: ' + dna)
-##    print('Reverse: ' + rsDNA)
-##    print('Complement: ' + csDNA)
-##    print('Reverse Complement: ' + rcsDNA)
-##
-##    for frame in range (3):
-##        print('Framework: {}'.format(frame+1))
-##        print()
-##        c = codon_generator(dna,frame)
-##        print('Sequence spaced out by codons')
-##        print(c)
-##        print()
-##        print('Coding Region Sequence')
-##        coding_region = coding_region_finder(c)
-##        for seq in coding_region:
-##            coding_seq = coding_region[seq]
-##            if coding_seq != '':
-##                print('Sequence Name/ID: {}'.format(seq))
-##                print(coding_seq)
-##                print()
-##        print('Protein Sequence for whole region:')
-##        print(protien_sequence_generator(c))
-##        print()
-##        print('Protein Sequence for coding regions:')
-##        for seq in coding_region:
-##            coding_seq = coding_region[seq]
-##            if coding_seq != '':
-##                print('Sequence Name/ID: {}'.format(seq))
-##                print(protien_sequence_generator(coding_seq))
-##                print()
+    dna = seq_dictionary[key]
+    dna_contents = dna_content(dna)
+    print('The sequence length is {} bp\nThe number of A is {}\nThe number of T is {}\nThe number of G is {}\nThe number of C is {}\nThe number of AT paris is {}\nThe number of GC pairs is {}'
+          .format(dna_length(dna),dna_contents[0],dna_contents[1],dna_contents[2],dna_contents[3],dna_contents[4],dna_contents[5]))
+    rsDNA = reverse_strand(dna)
+    csDNA = complement_strand(dna)
+    rcsDNA = reverse_complement_strand(dna)
+
+    print('DNA: ' + dna)
+    print('Reverse: ' + rsDNA)
+    print('Complement: ' + csDNA)
+    print('Reverse Complement: ' + rcsDNA)
+
+    for frame in range (3):
+        print('Framework: {}'.format(frame+1))
+        print()
+        c = codon_generator(dna,frame)
+        print('Sequence spaced out by codons')
+        print(c)
+        print()
+        print('Coding Region Sequence')
+        coding_region = coding_region_finder(c)
+        for seq in coding_region:
+            coding_seq = coding_region[seq]
+            if coding_seq != '':
+                print('Sequence Name/ID: {}'.format(seq))
+                print(coding_seq)
+                print()
+        print('Protein Sequence for whole region:')
+        print(protien_sequence_generator(c))
+        print()
+        print('Protein Sequence for coding regions:')
+        for seq in coding_region:
+            coding_seq = coding_region[seq]
+            if coding_seq != '':
+                print('Sequence Name/ID: {}'.format(seq))
+                print(protien_sequence_generator(coding_seq))
+                print()
