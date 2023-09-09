@@ -17,11 +17,13 @@ def main(page: flet.Page):
     page.title = "Learn about your FASTA file"
     page.scroll = "adaptive"
     
-    #Flet code for selecting a file
+    #Flet code for selecting a file, if file selection successful, file is read and sequences
+    #will be placed in a dictionary using seq_dictionary() function
     file_picker = flet.FilePicker()
     page.overlay.append(file_picker)
     file = None
     full_path = None
+    
     #text boxes for displaying selected file name and full path, and analysis results text
     file_name = flet.Text()
     file_path = flet.Text()
@@ -35,13 +37,15 @@ def main(page: flet.Page):
             #can add other icons for other search results once those have been decided
             page.add(string_tb, b, gd)
             file_name.update()
-            file = file_name.value
+            file = file_read(file_path.value)
             file_path.value = e.files[0].path
             file_path.update()
             full_path = file_path.value
+            if file != None:
+                seq_dictionary = seq_dictionary_generator(file)
+                t.value = list(seq_dictionary.keys())
             gd.value = "\n Would call functions for other analysis and display results here, for example: \n\n GC content \n\n Taxonomy"
             gd.update()
-            seq_dictionary = seq_dictionary_generator(file_read(file))
         else:
             file_path.value = ''
             #add if/else to remove string_tb, b, etc. from the page if no file is selected
@@ -64,6 +68,7 @@ def main(page: flet.Page):
     def search_button_clicked(e):
         #add code here to search for string using string_tb.value
         t.value = f"String searched for: '{string_tb.value}'"
+
         #tb.value represents the variable holding the entered search, when the search button is selected, the print command prints the string to the shell
         page.update()
 
@@ -76,7 +81,7 @@ def main(page: flet.Page):
     
     
     
-    #read the file
+    #read the file (could be added to class)
     def file_read(fileName):
         try:
             file = open(str(fileName), "r")
