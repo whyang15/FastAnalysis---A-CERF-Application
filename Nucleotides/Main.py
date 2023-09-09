@@ -1,5 +1,5 @@
 import Nucleotide_Anaylsis as na
-import Working_With_Analysis as wwa
+import Working_With_Files as wwa
 
 ## Make it so that import works 
 seq_dictionary = wwa.seq_dictionary_generator(wwa.file_read())

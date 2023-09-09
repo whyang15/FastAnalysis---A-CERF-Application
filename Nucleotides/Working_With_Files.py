@@ -5,8 +5,8 @@ def file_read():
         fileCont = file.readlines()
         return fileCont
     except OSError:
-        print("The file '{}' is not found.".format(fileName))
-        return False
+        return "The file '{}' is not found.".format(fileName)
+        
 
 def seq_dictionary_generator(file_cont):
     
