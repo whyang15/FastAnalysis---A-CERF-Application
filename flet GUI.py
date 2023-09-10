@@ -1,6 +1,7 @@
 #imported packages for application
 import flet
 import re
+import os
 
 #initial coomments:
 #This GUI example will not show other available icons/text until a file has been successfully uploaded.
@@ -17,11 +18,13 @@ def main(page: flet.Page):
     page.title = "Learn about your FASTA file"
     page.scroll = "adaptive"
     
-    #Flet code for selecting a file
+    #Flet code for selecting a file, if file selection successful, file is read and sequences
+    #will be placed in a dictionary using seq_dictionary() function
     file_picker = flet.FilePicker()
     page.overlay.append(file_picker)
     file = None
     full_path = None
+    
     #text boxes for displaying selected file name and full path, and analysis results text
     file_name = flet.Text()
     file_path = flet.Text()
@@ -35,13 +38,15 @@ def main(page: flet.Page):
             #can add other icons for other search results once those have been decided
             page.add(string_tb, b, gd)
             file_name.update()
-            file = file_name.value
             file_path.value = e.files[0].path
             file_path.update()
+            file = file_read(str(file_path.value))
             full_path = file_path.value
+            if file != None:
+                seq_dictionary = seq_dictionary_generator(file)
+                t.value = list(seq_dictionary.keys())
             gd.value = "\n Would call functions for other analysis and display results here, for example: \n\n GC content \n\n Taxonomy"
             gd.update()
-            seq_dictionary = seq_dictionary_generator(file_read(file))
         else:
             file_path.value = ''
             #add if/else to remove string_tb, b, etc. from the page if no file is selected
@@ -52,11 +57,7 @@ def main(page: flet.Page):
     file_picker = flet.FilePicker(on_result=on_dialog_result)
     #button for uploading a file, could place a text field in same row to display name of the CERF imported file??
     f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
-                                     on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', '.fa', 'txt']))])
-
-    #def read_file(x):
-        #read_file = open(x, 'r')
-        #print(read_file[0])
+                                     on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', '.fa', '.FA', 'txt']))])
 
     #Analysis functions
     #-------
@@ -64,6 +65,7 @@ def main(page: flet.Page):
     def search_button_clicked(e):
         #add code here to search for string using string_tb.value
         t.value = f"String searched for: '{string_tb.value}'"
+
         #tb.value represents the variable holding the entered search, when the search button is selected, the print command prints the string to the shell
         page.update()
 
@@ -76,31 +78,39 @@ def main(page: flet.Page):
     
     
     
-    #read the file
+    #read the file (could be added to class)
     def file_read(fileName):
         try:
-            file = open(str(fileName), "r")
-            fileCont = file.readlines()
+            open_file = open(fileName)
+            fileCont = open_file.read() 
             return fileCont
         except OSError:
             print("The file '{}' is not found.".format(fileName))
             return False
-    #icons and variables: read
     
-    
+
+    #this creates a dictionary with all newlines removed, and one singe string to contain the sequence per header
     #seq_dictionary function:
     def seq_dictionary_generator(fileCont):
-    
-        header_position = []
-        file_dictionary = {}
-        
-        for line in str(fileCont):
-            if '>' in line:
-                header_position.append(fileCont.index(line))
-                
-        for pos in header_position:
-            file_dictionary[fileCont[pos]] = ' '.join(map(str,fileCont[pos+1:pos+2]))
 
+        file_dictionary = {}
+        seq = ''
+        
+        for line in fileCont.split('\n'):
+            
+            if line.startswith('>'):
+                if seq != '':
+                    file_dictionary[header].append(seq)
+                    seq = ''
+                header = line.rstrip('\n')
+                if header not in file_dictionary:
+                    file_dictionary[header] = []
+            else:
+                sequence = line.strip('\n')
+                seq = str(seq) + str(sequence)
+                    
+        file_dictionary[header].append(seq)
+        print(file_dictionary)
         return file_dictionary
 
     #icons and variables: Find taxonomy function
