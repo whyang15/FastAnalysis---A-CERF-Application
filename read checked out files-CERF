@@ -1,3 +1,5 @@
+import re, os, os.path
+
 #this function returns the path of the checked out file in CERF
 #the name of the file does not need to be know, the function searches all subfolders of the .cerf folder for appropriate file extensions
 #HOWEVER, the script is required to be saved in the .cerf folder in order for the file to be found.
@@ -16,4 +18,4 @@ def import_CERF():
     else:
         return False
 
-print(import_CERF)
+print(import_CERF())
