@@ -1,0 +1,14 @@
+
+
+def import_CERF():
+    rootdir = os.getcwd()
+    full_path = None
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            filepath = subdir + os.sep + file
+            if filepath.endswith(".txt") and file != "Quickstart.txt":
+                full_path = filepath
+    if full_path != None:
+        return full_path
+    else:
+        return False
