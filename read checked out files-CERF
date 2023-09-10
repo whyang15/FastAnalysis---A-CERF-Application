@@ -15,3 +15,5 @@ def import_CERF():
         return full_path
     else:
         return False
+
+print(import_CERF)
