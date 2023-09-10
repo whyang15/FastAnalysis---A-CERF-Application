@@ -1,3 +1,4 @@
+import re
 def file_read():
     fileName =input("Please enter the name of the file that contains the sequence:")
     try:
@@ -5,7 +6,7 @@ def file_read():
         fileCont = file.readlines()
         return fileCont
     except OSError:
-        return "The file '{}' is not found.".format(fileName)
+        return "The file not found."
         
 
 def seq_dictionary_generator(file_cont):
@@ -16,9 +17,15 @@ def seq_dictionary_generator(file_cont):
     for line in file_cont:
         if '>' in line:
             header_position.append(file_cont.index(line))
-            
+
+    pos2 = header_position[1::]
+    pos2 = iter(pos2)
     for pos in header_position:
-        file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1:pos+2]))
+        if pos != header_position[-1]:
+            pos3 = next(pos2)
+            file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1:pos3]))
+        else:
+            file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1::]))
 
     return file_dictionary
 ## Work in progress

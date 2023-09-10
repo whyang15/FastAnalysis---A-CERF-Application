@@ -2,7 +2,9 @@ import Nucleotide_Anaylsis as na
 import Working_With_Files as wwa
 
 ## Make it so that import works 
-seq_dictionary = wwa.seq_dictionary_generator(wwa.file_read())
+file = wwa.file_read()
+seq_dictionary = wwa.seq_dictionary_generator(file)
+# print(seq_dictionary)
 print('Number of Entries in File: {}'.format(wwa.number_of_entries_finder(seq_dictionary)))
 for key in seq_dictionary:
     header_info = wwa.header_parser(key)
@@ -39,6 +41,7 @@ for key in seq_dictionary:
         print(na.protien_sequence_generator(c))
         print()
         print('Protein Sequence for coding regions:')
+        
         for seq in coding_region:
             coding_seq = coding_region[seq]
             if coding_seq != '':
