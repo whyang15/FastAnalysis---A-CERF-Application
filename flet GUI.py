@@ -52,7 +52,7 @@ def import_CERF():
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             filepath = subdir + os.sep + file
-            if filepath.endswith(".txt") and file != "Quickstart.txt":
+            if (filepath.endswith(".txt") or filepath.endswith(".fasta") or filepath.endswith(".fa")) and file != "Quickstart.txt":
                 full_path = filepath
     if full_path != None:
         return full_path
