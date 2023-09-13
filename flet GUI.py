@@ -1,7 +1,6 @@
 #imported packages for application
 import flet
-import re
-import os
+import re, os
 
 #initial coomments:
 #This GUI example will not show other available icons/text until a file has been successfully uploaded.
@@ -108,9 +107,9 @@ def main(page: flet.Page):
     b = flet.ElevatedButton(text="Search", on_click=search_button_clicked)
     file_picker = flet.FilePicker(on_result=on_dialog_result)
     f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
-                                         on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', '.fa', '.FA', 'txt']))])
+                                         on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', 'fa', 'txt']))])
 
-    #If there is a chceked out CERF file, then the 
+    #If there is a checked out CERF file, then the 
     if import_CERF() != False:
         page.add(file_picker, file_name, file_path, f, t)
         file_path.value = import_CERF()
@@ -124,5 +123,5 @@ def main(page: flet.Page):
         gd.update()
     else:
         page.add(file_picker, file_name, file_path, f, t)
- 
+    
 flet.app(target=main)
