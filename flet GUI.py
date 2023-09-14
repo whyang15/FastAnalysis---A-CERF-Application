@@ -1,6 +1,6 @@
 #imported packages for application
 import flet
-import re
+import re, os
 
 #initial coomments:
 #This GUI example will not show other available icons/text until a file has been successfully uploaded.
@@ -11,24 +11,124 @@ import re
 #The name of the uploaded file (i.e. file_name.extension, not the full path) is saved in the variable 'file'
 #The full path of the uloaded file is saved to the variable 'full_path'
 
+def file_read(fileName):
+        try:
+            open_file = open(fileName)
+            fileCont = open_file.read() 
+            return fileCont
+        except OSError:
+            print("The file '{}' is not found.".format(fileName))
+            return False
 
+
+def seq_dictionary_generator(fileCont):
+
+        file_dictionary = {}
+        seq = ''
+        
+        for line in fileCont.split('\n'):
+            
+            if line.startswith('>'):
+                if seq != '':
+                    file_dictionary[header].append(seq)
+                    seq = ''
+                header = line.rstrip('\n')
+                if header not in file_dictionary:
+                    file_dictionary[header] = []
+            else:
+                sequence = line.strip('\n')
+                seq = str(seq) + str(sequence)
+                    
+        file_dictionary[header].append(seq)
+        return file_dictionary
+
+''' write a function to calculate length of sequence'''
+def findLen(seq):
+    seqlen = len(seq)
+    return seqlen
+
+
+''' write a function to calculate each amino acid content, then report the % hydrophobic / hydrophilic content'''
+def get_aa_pct(protein):
+    protein_length = len(protein)
+    ''' AA code list currently does not include rare or ambigous bases:  B (Aspartic acid (D) or Asparagine (N)),
+    J (Leucine (L) or Isoleucine (I)), O (Pyrrolysine), U (Selenocysteine), Z (Glutamic acid (E) or Glutamine (Q)), X (any)
+    '''
+    aa_list = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 
+               'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y', '-', '*']
+    # Generate key:value (amino acid:counts) in the aa_count dictionary.
+    aa_count = {aa: protein.count(aa) for aa in aa_list}
+    # Calculate the aa percentage using the count value for aa key from aa_count dict.
+    # Append to aa_pct_dict dictionary
+    aa_pct_dict = {aa: round(count / protein_length, 2) for aa, count in aa_count.items()}
+    return aa_pct_dict
+
+def get_aa_counts(protein):
+    protein_length = len(protein)
+    ''' AA code list currently does not include rare or ambigous bases:  B (Aspartic acid (D) or Asparagine (N)),
+    J (Leucine (L) or Isoleucine (I)), O (Pyrrolysine), U (Selenocysteine), Z (Glutamic acid (E) or Glutamine (Q)), X (any)
+    '''
+    aa_list = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 
+               'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y', '-', '*']
+    # Generate key:value (amino acid:counts) in the aa_count dictionary.
+    aa_count_dict = {aa: protein.count(aa) for aa in aa_list}
+    return aa_count_dict
+
+def get_hydrophobic_pct(protein):
+    protein_length = len(protein)
+    # Current hydrophobic aa set does not include ambigous base notation:  J (Leucine (L) or Isoleucine (I))
+    hydrophobic_aa_set = {'A', 'F', 'G', 'I', 'L', 'M', 'P', 'V', 'W'}
+    hydrophobic_count = sum(1 for aa in protein if aa in hydrophobic_aa_set)
+    hydrophobic_pct = round( hydrophobic_count / protein_length, 2)
+    return hydrophobic_pct
+
+def get_hydrophilic_pct(protein):
+    protein_length = len(protein)
+    ''' Current hydrophilic aa set does not include ambigous base notations:  B (Aspartic acid (D) or Asparagine (N)), 
+    Z (Glutamic acid (E) or Glutamine (Q))
+    '''
+    hydrophilic_aa_set = {'C', 'D', 'E', 'H', 'K', 'N', 'Q', 'R', 'S', 'T', 'Y'}
+    hydrophilic_count = sum(1 for aa in protein if aa in hydrophilic_aa_set)
+    hydrophilic_pct = round( hydrophilic_count / protein_length, 2)    
+    return  hydrophilic_pct
+    
+
+#this function returns the path of the checked out file in CERF
+#the name of the file does not need to be know, the function searches all subfolders of the .cerf folder for appropriate file extensions
+#HOWEVER, the script is required to be saved in the .cerf folder in order for the file to be found.
+#Additionally, there can only be one file of extension ".txt", ".fasta", or ".fa" checked out at a time
+    
+def import_CERF():
+    rootdir = os.getcwd()
+    full_path = None
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            filepath = subdir + os.sep + file
+            if (filepath.endswith(".txt") or filepath.endswith(".fasta") or filepath.endswith(".fa")) and file != "Quickstart.txt":
+                full_path = filepath
+    if full_path != None:
+        return full_path
+    else:
+        return False
+    
+
+    
 def main(page: flet.Page):
     #could add application name to title page
     page.title = "Learn about your FASTA file"
     page.scroll = "adaptive"
     
-    #Flet code for selecting a file, if file selection successful, file is read and sequences
-    #will be placed in a dictionary using seq_dictionary() function
+    #Flet code for selecting a file
     file_picker = flet.FilePicker()
     page.overlay.append(file_picker)
     file = None
     full_path = None
-    
     #text boxes for displaying selected file name and full path, and analysis results text
     file_name = flet.Text()
     file_path = flet.Text()
     gd = flet.Text(color = "black")
-    
+
+    #must remain embedded within main()
     def on_dialog_result(e:flet.FilePickerResultEvent):
         if e.files != None:
             file_name.value = (
@@ -37,14 +137,13 @@ def main(page: flet.Page):
             #can add other icons for other search results once those have been decided
             page.add(string_tb, b, gd)
             file_name.update()
-            file = file_read(file_path.value)
+            file = file_name.value
             file_path.value = e.files[0].path
             file_path.update()
+            file = file_read(file_path.value)
             full_path = file_path.value
-            if file != None:
-                seq_dictionary = seq_dictionary_generator(file)
-                t.value = list(seq_dictionary.keys())
             gd.value = "\n Would call functions for other analysis and display results here, for example: \n\n GC content \n\n Taxonomy"
+           # gd.value = "\n Sequence lengths found: " + print(seqlen_dict) +"\n\n"
             gd.update()
         else:
             file_path.value = ''
@@ -52,36 +151,25 @@ def main(page: flet.Page):
             file_name.value =f"File not selected, please select a file to continue."
         page.update()
 
-    #icons: file selection
-    file_picker = flet.FilePicker(on_result=on_dialog_result)
-    #button for uploading a file, could place a text field in same row to display name of the CERF imported file??
-    f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
-                                     on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', '.fa', 'txt']))])
-
-    #def read_file(x):
-        #read_file = open(x, 'r')
-        #print(read_file[0])
-
-    #Analysis functions
-    #-------
-    #search function
     def search_button_clicked(e):
-        #add code here to search for string using string_tb.value
         t.value = f"String searched for: '{string_tb.value}'"
-
         #tb.value represents the variable holding the entered search, when the search button is selected, the print command prints the string to the shell
         page.update()
-
-    #icons and variables: search engine
+        
     t = flet.Text()
     string_tb = flet.TextField(label="Enter header or sequence search:")
     b = flet.ElevatedButton(text="Search", on_click=search_button_clicked)
+    file_picker = flet.FilePicker(on_result=on_dialog_result)
+    f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
+<<<<<<< Updated upstream
+                                         on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', 'fa', 'txt']))])
 
-    #icons and variables: general display
+=======
+                                         on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', '.fa', '.FA', 'txt']))])
     
     
     
-    #read the file (could be added to class)
+    #read the file
     def file_read(fileName):
         try:
             file = open(str(fileName), "r")
