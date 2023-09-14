@@ -2,9 +2,9 @@
 
 # import necessary modules
 import os
-import argparse
 import sys
 import re
+from collections import Counter
 
 # pseudo code
 
@@ -22,30 +22,40 @@ def is_dna_or_aa(sequence, type):
         return False
 
 
-
-def getSeq():
-    search_path = "/Users/Wei-Hsien/Desktop/"         # this will have to be defined by GUI?
-    filename = args.input
-    print(filename)
-    for root, dirs, files in os.walk(search_path):
-        if filename in files:
-            file_path = os.path.join(root, filename)
-            #print(file_path)
-            print(f"The path of {filename} is {file_path}")
+# write a function that checks whether file exists. #
+def check_Fasta_exists():
+    # search_path = "/Users/Wei-Hsien/Desktop/"         # this will have to be defined by GUI?
+    search_path = os.getcwd()
+    full_path = None    # initialize the full_path variable
+    filename = None    # initialize the filename variable
+    
+    for subdir, dirs, files in os.walk(search_path):
+        for file in files:
+            filepath = subdir + os.sep + file
+            extensions = (".txt", ".fasta", ".fa")
+            if filepath.endswith(extensions):
+                full_path = filepath
+                filename = os.path.basename(full_path)
+                print(f"The path of {filename} is {full_path}")
+                #return full_path
+            #print(full_path)
+                break
 
     # read input file:
-    with open(file_path, 'r') as file:
-        sequence = file.readlines()
-        seq=""
-    
-        for line in sequence:
-        # if line does not starts with ">", save as sequence for search:
-            if line.startswith(">") == False:  # header line
-                seq += line.strip().replace(" ", "")
-                
-        return seq 
+    if full_path is not None:
+        try:
+            file = open(full_path, 'r')
+            print(f"The {filename} file exists")
+            return file, full_path
+        except FileNotFoundError:
+            print(f"The {filename} file does not exist.")
+    else:
+        print("No matching FASTA file found.")
+
+    return None   # Return None if no file is found or can be opened.
     
 
+    
 # Define function that separates header from sequence in fasta file and store in dictionary. 
 # Make function to generate dictionary of fastas:
 
@@ -97,49 +107,100 @@ def get_aa_counts(protein):
     aa_count_dict = {aa: protein.count(aa) for aa in aa_list}
     return aa_count_dict
 
-def get_hydrophobic_pct(protein):
-    protein_length = len(protein)
+def get_hydrophobic_counts(protein):
+    #protein_length = len(protein)
     # Current hydrophobic aa set does not include ambigous base notation:  J (Leucine (L) or Isoleucine (I))
     hydrophobic_aa_set = {'A', 'F', 'G', 'I', 'L', 'M', 'P', 'V', 'W'}
     hydrophobic_count = sum(1 for aa in protein if aa in hydrophobic_aa_set)
-    hydrophobic_pct = round( hydrophobic_count / protein_length, 2)
-    return hydrophobic_pct
+    #hydrophobic_pct = round( hydrophobic_count / protein_length, 2)
+    return hydrophobic_count
 
-def get_hydrophilic_pct(protein):
-    protein_length = len(protein)
+def get_hydrophilic_counts(protein):
+    #protein_length = len(protein)
     ''' Current hydrophilic aa set does not include ambigous base notations:  B (Aspartic acid (D) or Asparagine (N)), 
     Z (Glutamic acid (E) or Glutamine (Q))
     '''
     hydrophilic_aa_set = {'C', 'D', 'E', 'H', 'K', 'N', 'Q', 'R', 'S', 'T', 'Y'}
     hydrophilic_count = sum(1 for aa in protein if aa in hydrophilic_aa_set)
-    hydrophilic_pct = round( hydrophilic_count / protein_length, 2)    
-    return  hydrophilic_pct
+    #hydrophilic_pct = round( hydrophilic_count / protein_length, 2)    
+    return  hydrophilic_count
+
+
+# Write function to add values in 2 different dictionaries together.
+def add_dict_values(dict1, dict2):
+    counter1 = Counter(dict1)
+    counter2 = Counter(dict2)
+    sum_counter = counter1 + counter2
+    sum_counter_dict = dict(sum_counter)
+    return sum_counter_dict
+
+
+# Write function format into FASTA file:
+# Format to Fasta:
+def formatFasta(seq, new_header, filepath):
+    header = ""
+    file_name = filepath
+    header = ">" + str(new_header) + "\n"
+    # format seq to write 80 nt per line
+    formatted_seq = ""
+    formatted_seq += header
+    for pos in range(0, len(seq), 80):
+        formatted_seq += seq[pos:pos+80]+"\n"
+    # print(formatted_seq)
+    
+    fasta = open(file_name, 'w')
+    fasta.write(formatted_seq)
+    fasta.close()
+
 
 
 # Main function:
-def main(args):
-    seq = getSeq()      
-    seqlen=findLen(seq)
-    print("sequence len is:  ", str(seqlen))
-    if is_dna_or_aa(seq, "nucleotides") == True:
-        print("This is not a peptide sequence.")
-    else: 
-        aa_counts = get_aa_counts(seq)
-        print(aa_counts)
-        #aa_pct = get_aa_pct(seq)
-        #print(aa_pct)
-        hphobic_pct = get_hydrophobic_pct(seq)
-        print(f"hydrophobic aa pct: {hphobic_pct}")
-        hphilic_pct = get_hydrophilic_pct(seq)
-        print(f"hydrophilic aa pct: {hphilic_pct}")
+def main():
+    file, filepath = check_Fasta_exists()
+    #print(file)
+    #seqs = getFastaDict(file)
+    fasta_dict = {}
+    seqlen = 0
+    hphobic = 0
+    hphilic = 0
+    tmp = {}
+    seq_lines = ""
+    for line in file:
+        if line.startswith(">"):  # header line
+            key = line.strip()
+            #print(key)
+            #fasta_dict[key] = ""
+            #new_lines.append(new_header)  # add the new header
+        else: 
+            seq = line.strip().replace(" ", "")
+            #print(seq)
+            seq_lines += seq
+            # calculate per sequence line:
+            seqlen += len(seq)
+            if is_dna_or_aa(seq, "nucleotides"):
+                print("This is not a peptide sequence.")
+            else:
+                aa_counts_line = get_aa_counts(seq)
+                tmp = add_dict_values(tmp, aa_counts_line)
+                aa_counts_new = tmp
+                hphobic += get_hydrophobic_counts(seq)
+                hphilic += get_hydrophilic_counts(seq)
+    print(seq_lines)
 
+    hphobic_pct = round(hphobic / seqlen, 2)
+    hphilic_pct = round(hphilic / seqlen, 2)
+    ln = "seqlen=" + str(seqlen)
+    aa = "aa counts=" + str(aa_counts_new)
+    hl = "hphilic_pct=" + str(hphilic_pct)
+    ho = "hphobic_pct=" + str(hphobic_pct)
+    
+    new_header_list = [key, "||", aa, ln,  hl, ho]
+    new_header = ' '.join(new_header_list)
+    print(new_header)
+    
+    # format new file and write to new FASTA.
+    formatFasta(seq_lines, new_header, filepath)
 
 
 ###-----------------------------------------------------
-if __name__=="__main__":
-    parser=argparse.ArgumentParser()
-    parser.add_argument("--input", help="input FASTA file")
-    parser.add_argument("--output", help="output FASTA name")
-    args=parser.parse_args()
-    
-    main(args)
+main()
