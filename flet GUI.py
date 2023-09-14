@@ -20,6 +20,7 @@ def file_read(fileName):
             print("The file '{}' is not found.".format(fileName))
             return False
 
+
 def seq_dictionary_generator(fileCont):
 
         file_dictionary = {}
@@ -40,7 +41,58 @@ def seq_dictionary_generator(fileCont):
                     
         file_dictionary[header].append(seq)
         return file_dictionary
+
+''' write a function to calculate length of sequence'''
+def findLen(seq):
+    seqlen = len(seq)
+    return seqlen
+
+
+''' write a function to calculate each amino acid content, then report the % hydrophobic / hydrophilic content'''
+def get_aa_pct(protein):
+    protein_length = len(protein)
+    ''' AA code list currently does not include rare or ambigous bases:  B (Aspartic acid (D) or Asparagine (N)),
+    J (Leucine (L) or Isoleucine (I)), O (Pyrrolysine), U (Selenocysteine), Z (Glutamic acid (E) or Glutamine (Q)), X (any)
+    '''
+    aa_list = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 
+               'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y', '-', '*']
+    # Generate key:value (amino acid:counts) in the aa_count dictionary.
+    aa_count = {aa: protein.count(aa) for aa in aa_list}
+    # Calculate the aa percentage using the count value for aa key from aa_count dict.
+    # Append to aa_pct_dict dictionary
+    aa_pct_dict = {aa: round(count / protein_length, 2) for aa, count in aa_count.items()}
+    return aa_pct_dict
+
+def get_aa_counts(protein):
+    protein_length = len(protein)
+    ''' AA code list currently does not include rare or ambigous bases:  B (Aspartic acid (D) or Asparagine (N)),
+    J (Leucine (L) or Isoleucine (I)), O (Pyrrolysine), U (Selenocysteine), Z (Glutamic acid (E) or Glutamine (Q)), X (any)
+    '''
+    aa_list = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 
+               'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y', '-', '*']
+    # Generate key:value (amino acid:counts) in the aa_count dictionary.
+    aa_count_dict = {aa: protein.count(aa) for aa in aa_list}
+    return aa_count_dict
+
+def get_hydrophobic_pct(protein):
+    protein_length = len(protein)
+    # Current hydrophobic aa set does not include ambigous base notation:  J (Leucine (L) or Isoleucine (I))
+    hydrophobic_aa_set = {'A', 'F', 'G', 'I', 'L', 'M', 'P', 'V', 'W'}
+    hydrophobic_count = sum(1 for aa in protein if aa in hydrophobic_aa_set)
+    hydrophobic_pct = round( hydrophobic_count / protein_length, 2)
+    return hydrophobic_pct
+
+def get_hydrophilic_pct(protein):
+    protein_length = len(protein)
+    ''' Current hydrophilic aa set does not include ambigous base notations:  B (Aspartic acid (D) or Asparagine (N)), 
+    Z (Glutamic acid (E) or Glutamine (Q))
+    '''
+    hydrophilic_aa_set = {'C', 'D', 'E', 'H', 'K', 'N', 'Q', 'R', 'S', 'T', 'Y'}
+    hydrophilic_count = sum(1 for aa in protein if aa in hydrophilic_aa_set)
+    hydrophilic_pct = round( hydrophilic_count / protein_length, 2)    
+    return  hydrophilic_pct
     
+
 #this function returns the path of the checked out file in CERF
 #the name of the file does not need to be know, the function searches all subfolders of the .cerf folder for appropriate file extensions
 #HOWEVER, the script is required to be saved in the .cerf folder in order for the file to be found.
@@ -58,6 +110,8 @@ def import_CERF():
         return full_path
     else:
         return False
+    
+
     
 def main(page: flet.Page):
     #could add application name to title page
@@ -90,7 +144,9 @@ def main(page: flet.Page):
             if file != None:
                 seq_dictionary = seq_dictionary_generator(file)
                 t.value = list(seq_dictionary.keys())
+
             gd.value = "\n Would call functions for other analysis and display results here, for example: \n\n GC content \n\n Taxonomy"
+           # gd.value = "\n Sequence lengths found: " + print(seqlen_dict) +"\n\n"
             gd.update()
         else:
             file_path.value = ''
@@ -107,8 +163,15 @@ def main(page: flet.Page):
     b = flet.ElevatedButton(text="Search", on_click=search_button_clicked)
     file_picker = flet.FilePicker(on_result=on_dialog_result)
     f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
+<<<<<<< Updated upstream
                                          on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', 'fa', 'txt']))])
 
+=======
+                                         on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', '.fa', '.FA', 'txt']))])
+    
+
+
+>>>>>>> Stashed changes
     #If there is a checked out CERF file, then the 
     if import_CERF() != False:
         page.add(file_picker, file_name, file_path, f, t)
@@ -117,7 +180,7 @@ def main(page: flet.Page):
         file = file_read(file_path.value)
         page.add(string_tb, b, gd)
         seq_dictionary = seq_dictionary_generator(file)
-        t.value = (list(seq_dictionary.keys()))
+        t.value = (list(seq_dictionary.keys()))     
         t.update()
         gd.value = "\n Would call functions for other analysis and display results here, for example: \n\n GC content \n\n Taxonomy"
         gd.update()
