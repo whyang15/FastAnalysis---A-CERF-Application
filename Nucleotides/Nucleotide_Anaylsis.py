@@ -23,13 +23,11 @@ def reverse_complement_strand(seq):
     rev_comp_strand = rev_comp_strand[::-1]
     return rev_comp_strand
 
-
-
-def codon_generator(seq,working_frame):
+def codon_generator(seq):
 
     codon_list = ''
     final_valid_codon = len(seq)-2
-    for codonStart in range(working_frame-1,final_valid_codon,3):
+    for codonStart in range(0,final_valid_codon,3):
         codon = seq[codonStart:codonStart+3].upper()
         if len(codon.strip()) == 3:
             codon_list = codon_list + ' ' + codon
@@ -56,7 +54,6 @@ def coding_region_finder(codon_list):
             temp_seq = ''
             count += 1
     return coding_regions    
-    
 
 def protien_sequence_generator(codon_list):
     amino_code = {
