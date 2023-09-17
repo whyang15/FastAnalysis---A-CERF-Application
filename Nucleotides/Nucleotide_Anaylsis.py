@@ -23,38 +23,46 @@ def reverse_complement_strand(seq):
     rev_comp_strand = rev_comp_strand[::-1]
     return rev_comp_strand
 
-def codon_generator(seq):
-
-    codon_list = ''
-    final_valid_codon = len(seq)-2
-    for codonStart in range(0,final_valid_codon,3):
-        codon = seq[codonStart:codonStart+3].upper()
-        if len(codon.strip()) == 3:
-            codon_list = codon_list + ' ' + codon
-    return codon_list.lstrip()
-
-def coding_region_finder(codon_list):
-    stop_codons = ['TTA', 'TGA', 'TAG']
-    start_positions = [pos for pos, start in enumerate(codon_list) if start == 'ATG']
-    stop_positions = [pos for pos, stop in enumerate (codon_list) if stop in stop_codons]
+def coding_region_finder(codon_list,frame):
+    stop_codons = ['TAA', 'TGA', 'TAG']
     coding_regions = {}
-
     write = False
     temp_seq = ''
     count = 0
-    for pos in range (0, len(codon_list), 4):
+    for pos in range (frame, len(codon_list)-2, 3):
         codon = codon_list[pos:pos+3]
         if codon == 'ATG':
             write = True
         if write == True:
-            temp_seq = temp_seq + ' ' + codon
+            temp_seq = temp_seq + codon
         if codon in stop_codons:
             write = False
-            coding_regions[count] = temp_seq.lstrip()
+            if len(temp_seq)>30:
+                coding_regions[count] = temp_seq
+                count += 1
             temp_seq = ''
-            count += 1
     return coding_regions    
+def ctest(seq,frame):
+    stop_codons = ['TTA', 'TGA', 'TAG']
+    coding_regions = {}
+    count = 1
+    sequence = ''
+    for base in range (frame, len(seq)-2,3):
+        if seq[base:base+3] == 'ATG':
+            if sequence !='':
+                sequence = sequence + 'ATG'
+            else:
+                sequence = 'ATG'
+        elif seq[base:base+3] in stop_codons:
+            sequence = sequence + seq[base:base+3]
+            if len(sequence) >= 30:
+                coding_regions[count] = sequence
+                count += 1
+            sequence = ''     
+        elif 'ATG' in sequence:
+            sequence = sequence + seq[base:base+3]
 
+    return coding_regions
 def protien_sequence_generator(codon_list):
     amino_code = {
                 'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
@@ -74,7 +82,7 @@ def protien_sequence_generator(codon_list):
                 'TAC':'Y', 'TAT':'Y', 'TAA':'_', 'TAG':'_',
                 'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'}#Include unique fasta codes
     prot_sequence =''    
-    for pos in range (0, len(codon_list),4):
+    for pos in range (0, len(codon_list),3):
         codon = codon_list[pos:pos+3]
         amino_acid = amino_code.get(codon, 'X')
         prot_sequence = prot_sequence + amino_acid

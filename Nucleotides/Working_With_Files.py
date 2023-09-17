@@ -8,9 +8,32 @@ def file_read():
     except OSError:
         return "The file not found."
         
+def test(file):
+    seq =''
+    header = ''
+    file_dictionary = {}
+    write = False
+    for line in file:
+        if '>' in line:
+            if write == True:
+                file_dictionary[header] = seq
+                header = ''
+                seq = ''
+                write = False
+            else:
+                header = str(line).replace('\n','').strip()
+        else:
+            seq = seq + str(line).replace('\n','').strip()
+            write = True
+    if not bool(file_dictionary.get(header)):
+        file_dictionary[header] = seq
+    return file_dictionary
+        
 
 def seq_dictionary_generator(file_cont):
-    
+    #Removes all the new line commands
+    file_cont[:] = [space.replace('\n', '') for space in file_cont]
+
     header_position = []
     file_dictionary = {}
     
@@ -21,11 +44,16 @@ def seq_dictionary_generator(file_cont):
     pos2 = header_position[1::]
     pos2 = iter(pos2)
     for pos in header_position:
+        temp = []
         if pos != header_position[-1]:
             pos3 = next(pos2)
-            file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1:pos3]))
+            temp.append(' '.join(map(str,file_cont[pos+1:pos3])))
+            file_dictionary[file_cont[pos]] = temp
+            #file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1:pos3]))
         else:
-            file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1::]))
+            temp.append(' '.join(map(str,file_cont[pos+1::])))
+            file_dictionary[file_cont[pos]] = temp
+           # file_dictionary[file_cont[pos]] = ' '.join(map(str,file_cont[pos+1::]))
 
     return file_dictionary
 ## Work in progress
