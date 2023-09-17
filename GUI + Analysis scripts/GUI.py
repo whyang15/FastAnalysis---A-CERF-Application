@@ -79,7 +79,7 @@ def main(page: flet.Page):
             file_path.update()
             file = file_read(file_path.value)
             full_path = file_path.value
-            gd.value = "Analysis Results: \n "
+            gd.value = "Analysis Results: \n\n\n\n\n\n "
             gd.update()
         else:
             file_path.value = ''
@@ -95,7 +95,7 @@ def main(page: flet.Page):
     #icons and text boxes
     t = flet.Text()
     string_tb = flet.TextField(label="Enter header or sequence search:")
-    b = flet.ElevatedButton(text="Search", on_click=search_button_clicked)
+    b = flet.ElevatedButton(text="Search", icon=flet.icons.SEARCH, on_click=search_button_clicked)
     file_picker = flet.FilePicker(on_result=on_dialog_result)
     f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
                                          on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', 'fa', 'faa', 'fna']))])
@@ -105,7 +105,7 @@ def main(page: flet.Page):
     def commit_clicked(e):
             gd.value = aa_finder.primary(True)
             gd.update()
-    c = flet.Row([flet.ElevatedButton(text="Commit Results", on_click=commit_clicked)], gd)
+    c = flet.Row([flet.ElevatedButton(text="Commit Results", on_click=commit_clicked)], alignment=flet.MainAxisAlignment.END, vertical_alignment=flet.CrossAxisAlignment.END)
 
     #Potential statement for using sys.argv to check whether the last command line statement was passing in a file of a valid extension [ext]
     #first check to see whether an argument was passed in from the command line (sys.argv[0] = full path to script, if an argument was passed it will be in sys.argv[1])
@@ -124,6 +124,4 @@ def main(page: flet.Page):
     else:
          page.add(file_picker, file_name, file_path, f, t)
 
-    
-    
 flet.app(target=main)
