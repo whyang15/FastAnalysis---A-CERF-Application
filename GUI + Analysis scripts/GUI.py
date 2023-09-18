@@ -18,28 +18,6 @@ def file_read(fileName):
         except OSError:
             print("The file '{}' is not found.".format(fileName))
             return False
-
-#don't necessarily need this anymore, when performing analysis can keep this in the script containing all the analysis functions
-def seq_dictionary_generator(fileCont):
-
-        file_dictionary = {}
-        seq = ''
-        
-        for line in fileCont.split('\n'):
-            
-            if line.startswith('>'):
-                if seq != '':
-                    file_dictionary[header].append(seq)
-                    seq = ''
-                header = line.rstrip('\n')
-                if header not in file_dictionary:
-                    file_dictionary[header] = []
-            else:
-                sequence = line.strip('\n')
-                seq = str(seq) + str(sequence)
-                    
-        file_dictionary[header].append(seq)
-        return file_dictionary
     
 def main(page: flet.Page):
     
@@ -54,9 +32,9 @@ def main(page: flet.Page):
     #Flet code for selecting a file, if file selection successful, file is read and sequences
     #will be placed in a dictionary using seq_dictionary() function
     file = None
-    full_path = None
 
     #text boxes for displaying selected file name and full path, and analysis results text
+    #may not need file_name box anymore
     file_name = flet.Text()
     file_path = flet.Text()
     gd = flet.Text(color = "black")
@@ -69,16 +47,11 @@ def main(page: flet.Page):
     #must remain embedded within main(), when a file is selected by the user using the Upload button the file path is read in and displayed to the text boxes
     def on_dialog_result(e:flet.FilePickerResultEvent):
         if e.files != None:
-            file_name.value = (
-                ", ".join(map(lambda f: f.name, e.files)) if e.files else "Cancelled!"
-                )
             #can add other icons for other search results once those have been decided
             page.add(string_tb, b, gd, c)
-            file_name.update()
             file_path.value = e.files[0].path
             file_path.update()
             file = file_read(file_path.value)
-            full_path = file_path.value
             gd.value = "Analysis Results: \n\n\n\n\n\n "
             gd.update()
         else:
@@ -100,12 +73,30 @@ def main(page: flet.Page):
     f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
                                          on_click=lambda _:file_picker.pick_files(allow_multiple= False, allowed_extensions=['fasta', 'fa', 'faa', 'fna']))])
 
+    #Code for creating info button and bottom sheet, provides info to the user about what is committed back to the file
+    def close_bs(e):
+            bs.open = False
+            page.update()
+
+    bs = flet.BottomSheet(flet.Container(flet.Row(
+            [flet.Text("Describe what the commit button does here, what data is written back to the file?"),
+            flet.ElevatedButton("Okay", on_click=close_bs)]), bgcolor=flet.colors.WHITE, padding=10, animate=flet.animation.Animation(1000, "bounceOut")))
+    page.overlay.append(bs)
+
+    def show_bs_click(e):
+            bs.open = True
+            page.update()
+
+
     #function that's launched after the Commit button is seleted, this will write the data back to the header
     #can call a function from aa_finder.py to write the results back to the file once the commit button is selected
     def commit_clicked(e):
             gd.value = aa_finder.primary(True)
             gd.update()
-    c = flet.Row([flet.ElevatedButton(text="Commit Results", on_click=commit_clicked)], alignment=flet.MainAxisAlignment.END, vertical_alignment=flet.CrossAxisAlignment.END)
+            
+    #An info button will be displayed along with the commit button, when selected it will display a container at the bottom of the page.
+    #The container will display the information that will be written back to the file if the user decides to select commit
+    c = flet.Row([flet.ElevatedButton(text="Commit Results", on_click=commit_clicked), flet.ElevatedButton("Info", icon=flet.icons.INFO_OUTLINED, on_click=show_bs_click)], alignment=flet.MainAxisAlignment.END, vertical_alignment=flet.CrossAxisAlignment.END)
 
     #Potential statement for using sys.argv to check whether the last command line statement was passing in a file of a valid extension [ext]
     #first check to see whether an argument was passed in from the command line (sys.argv[0] = full path to script, if an argument was passed it will be in sys.argv[1])
@@ -114,7 +105,7 @@ def main(page: flet.Page):
         file = file_read(sys.argv[1])
         page.add(file_picker, file_name, file_path, f, t, string_tb, b, gd, c)
         #for now displays the files contents
-        t.value = file
+        t.value = file + "\n"
         t.update()
         file_path.value = os.path.abspath(sys.argv[1])
         file_path.update()
