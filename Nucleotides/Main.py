@@ -1,5 +1,6 @@
 import Nucleotide_Anaylsis as na
 import Working_With_Files as wwa
+import RE_Digest as red
 
 file1 = wwa.file_read()
 seq_dictionary = wwa.test(file1)#wwa.seq_dictionary_generator(file1)
@@ -7,14 +8,13 @@ sum = 0
 print('Number of Entries in File: {}'.format(wwa.number_of_entries_finder(seq_dictionary)))
 count = 0
 strand = '+'
-##Note: Used the NIH ORF Finder as Reference. It included ORFs that had no stop codon and were located at the end of the sequnce
-##          Do we still want to include those ORFs with no stop codons?
 with open ("data_storage_test.txt","w") as file:
     for key in seq_dictionary:
         seq_id = str(key).split(' ')[0]
         file.write(seq_id)
         header_info = wwa.header_parser(key)
         dna = str(seq_dictionary[key])
+        dna_unchanged = str(seq_dictionary[key])
         file.write('\n'+dna)
         file.write('\n'+na.reverse_complement_strand(dna))
         dna_contents = na.dna_content(dna)
@@ -46,15 +46,19 @@ with open ("data_storage_test.txt","w") as file:
                 temp_gene_data.append(coding_seq)
                 temp_gene_data.append(na.protien_sequence_generator(coding_seq))
                 #if temp_gene_data !=[]:
-                ##Need to correct the postions of reverse strand orfs, have to be based on forward strand.
-                orf_id ='\n'+ seq_id + '_ORF'+ str(frame+1) + '_Strand:' + strand + '_Gene' + str(seq) + '_StartPos:' + str(dna.index(temp_gene_data[0])+1) + '_StopPos:'+str(dna.index(temp_gene_data[0])+len(temp_gene_data[0]))+'_Len(bp):' + str(len(temp_gene_data[0])) + ',\n'
+                if strand == '+':
+                    orf_id ='\n'+ seq_id + '_ORF'+ str(frame+1) + '_Strand:' + strand + '_Gene' + str(seq) + '_StartPos:' + str(dna.index(temp_gene_data[0])+1) + '_StopPos:'+str(dna.index(temp_gene_data[0])+len(temp_gene_data[0]))+'_Len(bp):' + str(len(temp_gene_data[0])) + ',\n'
+                else:
+                    new_temp_strand = (len(dna) - dna.index(temp_gene_data[0]))
+                    orf_id ='\n'+ seq_id + '_ORF'+ str(frame+1) + '_Strand:' + strand + '_Gene' + str(seq) + '_StartPos:' + str(new_temp_strand) + '_StopPos:'+str((new_temp_strand)-len(temp_gene_data[0])+1)+'_Len(bp):' + str(len(temp_gene_data[0])) + ',\n'
+
                 ORF_dictionary[orf_id] = temp_gene_data
                 file.write(orf_id)
                 file.write('NulcSeq:' + temp_gene_data[0] + ',')
                 file.write('ProtSeq:' + temp_gene_data[1] + ',')
                 count +=1
+                
             #New seq dictionary format
             #{header id : (sequence),{orf_id: (nucleotide sequence),(amino acid sequence)}}
             #seq_dictionary[key].append(ORF_dictionary)
     file.write('\n'+str(count))
-    print(sum)

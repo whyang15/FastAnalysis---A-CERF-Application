@@ -41,6 +41,8 @@ def coding_region_finder(codon_list,frame):
                 coding_regions[count] = temp_seq
                 count += 1
             temp_seq = ''
+    if temp_seq != '' and 'ATG' in temp_seq:
+        coding_regions[count] = temp_seq
     return coding_regions    
 def ctest(seq,frame):
     stop_codons = ['TTA', 'TGA', 'TAG']
