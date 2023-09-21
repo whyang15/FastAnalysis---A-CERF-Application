@@ -2,7 +2,8 @@
 import flet
 import re, os, sys
 
-from aa_dna_main import pass_file
+#from aa_dna_main import pass_file
+import aa_dna_main as aa
 
 #initial coomments:
 #This GUI example will not show other available icons/text until a file has been successfully uploaded.
@@ -43,14 +44,13 @@ def main(page: flet.Page):
     ext = ["faa", "fa", "fasta", "fna", "FAA", "FA", "FASTA", "FNA"]
 
     results = ""
+    formatted_seq = ""
     
     #must remain embedded within main(), when a file is selected by the user using the Upload button the file path is read in and displayed to the text boxes
     def on_dialog_result(e:flet.FilePickerResultEvent):
         if e.files != None:
             #can add other icons for other search results once those have been decided
-            modified, message = pass_file(e.files[0].path, False)
-            print(modified)
-            print(message) 
+            modified, message, formatted_seq = aa.pass_file(e.files[0].path) 
             page.add(string_tb, b, gd, c)
             file_path.value = e.files[0].path
             file_path.update()
@@ -85,9 +85,11 @@ def main(page: flet.Page):
     #function that's launched after the Commit button is seleted, this will write the data back to the header
     #can call a function from aa_finder.py to write the results back to the file once the commit button is selected
     def commit_clicked(e):
-            #can change to call function to write back to file once written
-            pass_file(file_path.value, False)
-            gd.value = "Results have been committed back to the file."
+            if formatted_seq == '':
+                    gd.value = "This file has already been analyzed, cannot commit results back to the file"
+            else:
+                    aa.commit_results(file_path.value, formatted_seq)
+                    gd.value = "File has been updated."
             gd.update()
 
     #Code for creating info button and bottom sheet, provides info to the user about what is committed back to the file
@@ -108,8 +110,6 @@ def main(page: flet.Page):
     #The container will display the information that will be written back to the file if the user decides to select commit
     c = flet.Row([flet.ElevatedButton(text="Commit Results", on_click=commit_clicked), flet.ElevatedButton("Info", icon=flet.icons.INFO_OUTLINED, on_click=show_bs_click)], alignment=flet.MainAxisAlignment.END, vertical_alignment=flet.CrossAxisAlignment.END)
 
-    
-
     #Potential statement for using sys.argv to check whether the last command line statement was passing in a file of a valid extension [ext]
     #first check to see whether an argument was passed in from the command line (sys.argv[0] = full path to script, if an argument was passed it will be in sys.argv[1])
     length = len(sys.argv)
@@ -117,7 +117,7 @@ def main(page: flet.Page):
         #could get rid of code for reading in file, and read_file function as this is performed in the analysis code?
         file = file_read(sys.argv[1])
         #if create a seperate function to write back to the file upon committing, can remove second argument from pass_file
-        modified, message = pass_file(sys.argv[1], False)
+        modified, message, formatted_seq = aa.pass_file(file_read(sys.argv[1]))
         page.add(file_picker, file_name, file_path, f, t, string_tb, b, gd, c)
         #for now displays the files contents
         t.value = file + "\n\n" + message
