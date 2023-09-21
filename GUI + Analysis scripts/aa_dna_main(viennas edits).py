@@ -14,7 +14,7 @@ import aa_functions as aa
 
 #this function passes in the file from the GUI (which was either passed from the command line or uploaded by the user)
 #the function returns modified: {whether the file has been previsouly analyzed}, message: {string describing whether the 
-def pass_file(filepath, c):
+def pass_file(filepath):
     hphobic = 0
     hphilic = 0
     new_header_sep = "ff output ["
@@ -30,7 +30,7 @@ def pass_file(filepath, c):
             if new_header_sep in header:
                 modified = True
                 message = str("This file has already been modified by CERF Fasta Analysis.")
-                return modified, message
+                return modified, message, formatted_seq
                 break
             else:
                 modified = False
@@ -42,7 +42,8 @@ def pass_file(filepath, c):
             print("length of sequence is: ", str(seqlen))
 
             if ff.is_dna_or_aa(seq, "nucleotides"):
-                print("This is not a peptide sequence.")   
+                print("This is not a peptide sequence.")
+                formatted_seq = ""
             else:
                 aa_counts_line = aa.get_aa_counts(seq)
                 hphobic += aa.get_hydrophobic_counts(seq)
@@ -62,10 +63,11 @@ def pass_file(filepath, c):
 
                 # format new file and write to new FASTA.
                 formatted_seq += ff.formatFasta(seq, new_header)
-
-        #will write back to file if commit button is selected
-        if c == True:
-            with open(filepath, "w") as output_file:
-                    output_file.write(formatted_seq)
+        print(formatted_seq)
                     
-        return modified, message
+    return modified, message, formatted_seq
+    
+def commit_results(filepath, data):
+    myfile = open(filepath, 'w')
+    myfile.write(data)
+    myfile.close()
