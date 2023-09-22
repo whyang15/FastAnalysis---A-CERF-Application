@@ -50,7 +50,7 @@ def main(page: flet.Page):
     def on_dialog_result(e:flet.FilePickerResultEvent):
         if e.files != None:
             #can add other icons for other search results once those have been decided
-            modified, message, formatted_seq = aa.pass_file(e.files[0].path) 
+            modified, message, formatted_seq = aa.pass_file(e.files[0].path)
             page.add(string_tb, b, gd, c)
             file_path.value = e.files[0].path
             file_path.update()
@@ -70,8 +70,9 @@ def main(page: flet.Page):
 
     #function to take in the string to be searched for and do something with it
     def search_button_clicked(e):
-        t.value = f"String searched for: '{string_tb.value}'"
-        page.update()
+            output_file_path= aa.searching(file_path.value, string_tb.value)
+            t.value = f"File containing output can be found at: " + output_file_path
+            t.update()
 
     #icons and text boxes
     t = flet.Text()
@@ -116,8 +117,7 @@ def main(page: flet.Page):
     if length>1 and sys.argv[1].endswith(tuple(ext)):
         #could get rid of code for reading in file, and read_file function as this is performed in the analysis code?
         file = file_read(sys.argv[1])
-        #if create a seperate function to write back to the file upon committing, can remove second argument from pass_file
-        modified, message, formatted_seq = aa.pass_file(file_read(sys.argv[1]))
+        modified, message, formatted_seq = aa.pass_file(sys.argv[1])
         page.add(file_picker, file_name, file_path, f, t, string_tb, b, gd, c)
         #for now displays the files contents
         t.value = file + "\n\n" + message
@@ -130,5 +130,4 @@ def main(page: flet.Page):
     else:
          page.add(file_picker, file_name, file_path, f, t)
 
-    
 flet.app(target=main)
