@@ -1,6 +1,6 @@
 # This module contains functions that checks the input FASTA file for format, content, and previous analysis done.
 from collections import Counter
-#import os
+import sys
 import re
 from Bio import SeqIO
 
@@ -76,8 +76,11 @@ def search_for_string(filepath, search_string=None):
     found_seqs = []
 
     if search_string is None:
-        print("No search word provided.")
-        return found_seqs
+        if len(sys.argv) < 3:
+            print("No search word provided.")
+            return found_seqs
+        else:
+            search_string = sys.argv[2]
       
     # covert search string to lower case for case-insensitive search
     search_string = search_string.lower()
@@ -109,7 +112,7 @@ def search_for_string(filepath, search_string=None):
                 'positions': positions
             })
 
-    return found_seqs
+    return found_seqs, search_string
 
 
 # Write a function to reformat search results: 

@@ -35,13 +35,13 @@ def main():
     # Search Analysis:
     # Search is optional.  
     # If more occurrences are found, add to the positions list.
-    if len(sys.argv) < 3:
+    """ if len(sys.argv) < 2:
         print("No search word provided.")
-        return
+        search_string = ""
     else:
-        search_string = sys.argv[2]
+        search_string = sys.argv[2] """
     
-    search_results = ff.search_for_string(filepath, search_string)
+    search_results = ff.search_for_string(filepath)
 
     # specify your output directory for search and additional analysis results here.
     additional_results = filepath.rsplit(".",2)[0]
@@ -54,12 +54,11 @@ def main():
     is_modified = ff.check_fasta_modified(filepath)
     if is_modified:
         # if search string is defined:
-        search_string = sys.argv[2]
-        search_results = ff.search_for_string(filepath, search_string)
+        search_results, search_string = ff.search_for_string(filepath)
         #print(search_results)
 
         # open and save results to separate file. 
-        ff.format_additional_results(additional_output_path, search_string, search_results)
+        ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
         return
     
     else: 
@@ -130,14 +129,13 @@ def main():
 
         
         # if search string is defined:
-        search_string = sys.argv[2]
-        search_results = ff.search_for_string(filepath, search_string)
+       # search_string = sys.argv[2]
+        search_results, search_string = ff.search_for_string(filepath)
         #print(search_results)
     
     # specify your output directory for search and additional analysis results here.          
-    ff.format_additional_results(additional_output_path, search_string, search_results)
-
-
+    ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
+    
 
 
 ###-----------------------------------------------------
