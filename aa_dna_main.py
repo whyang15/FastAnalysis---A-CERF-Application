@@ -6,6 +6,8 @@
 import sys
 from collections import Counter
 from Bio import SeqIO
+from Bio.Restriction import * 
+from Bio.Restriction.PrintFormat import PrintFormat
 import os
 import fasta_functions as ff
 import aa_functions as aa
@@ -18,15 +20,12 @@ def main():
     search_string = ""
     num_records = 0
     rec_num = 0
-    hphobic = 0
-    hphilic = 0
-    gc_pct = 0
+    
     new_header_sep = "ff output ["
     formatted_seq=""
     additional_results=""
-    tm = 0
     option_input=0
-    
+    re_results_output = ""
 
     if len(sys.argv) < 2:
         print("File path not provided.")
@@ -60,6 +59,8 @@ def main():
         # continue with CERF Fasta analysis:
         # open FASTA file and read in as file:
         with open(filepath, "r") as file:
+
+            # Ask user if they want to get Tm information.
             tm_input=input("Do you want Melting Temperature information? y/n ")
             if tm_input=="y".lower():
                 print("BioPython has three different equations to find Tm: \n ")       
@@ -70,7 +71,21 @@ def main():
                 print("This calculation does not take into account DNA/DNA, DNA/RNA, RNA/RNA and salt or chemical additives conditions ")
                 option_input=input("Please choose a Tm calculation option: \n")
             else:
+                tm = 0
                 print("will not calculate Tm.")
+
+            # Ask user if they want to get restriction enzyme cut sites information:
+            # find all restriction enzyme sites?
+            re_all_input = input("Search for restriction enzyme cut sites? y/n ")
+            if re_all_input=="y".lower():
+                print("You can enter a list of restriction enzymes to search for, or look through restriction enzyme database (All or Common).")
+                print(" 'All' will look for restriction enzyme cut sites of all enzymes in database.")
+                print(" 'Common' will look for restriction enzyme cut sites of commonly used restriction enzymes.")
+                    
+                re_batch_input = input("Enter list of retricton enzymes separated by ','. Use correct RE naming convention. Or enter 'All', or 'Common': ")
+            else:
+                re_all_input=="n".lower()
+                print("will not do restriction enzyme searches.")   
             
             # get number of records in FASTA file.
             num_records = ff.get_num_records(filepath)  
@@ -93,11 +108,7 @@ def main():
                     nuc_counts = nuc.get_dna_counts(seq)
                     print(nuc_counts)
 
-                    # calculate tm:
-                    tm_output = nuc.cal_tm(seq, option_input)
-                    opts={'1':'tm_wallace', '2':'tm_GC', '3':'tm_NN'}
-                    opt=opts.get(option_input)
-                    tm = "Tm(" + opt + ")=" + str(tm_output) + "'C"
+                    # records and base counts:
                     rc = "record_num="+str(rec_num)+"/"+str(num_records)
                     print(rc)
                     ln = "seqlen=" + str(seqlen)
@@ -106,16 +117,42 @@ def main():
                     gc_pct = round(nuc.get_gc_counts(seq) / seqlen, 1)
                     at = "AT%=" + str(at_pct*100)
                     gc = "GC%=" + str(gc_pct*100)
+                    
+                    # calculate tm:
+                    tm = nuc.cal_tm(seq, option_input)
+                    opts={'1':'tm_wallace', '2':'tm_GC', '3':'tm_NN'}
+                    opt=opts.get(option_input)
 
                     if tm != 0:
-                        new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, tm]
+                        tm_string = "Tm(" + opt + ")=" + str(tm) + "'C"
+                        new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, tm_string]
                     else:
                         new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
                     
                     new_header = ' '.join(new_header_list)
                     print(new_header)
+                    
                     # format new file and write to new FASTA.
                     formatted_seq += ff.formatFasta(seq, new_header)
+
+                    # restriction enzyme digests:
+                    if re_all_input == "y".lower():
+                        
+                        enzyme_names, positions_list, frags_list = nuc.reCut(seq, re_batch_input)
+                        
+                        # accumulate the formatted results:
+                        re_results_output += ff.format_re_results(enzyme_names, positions_list, frags_list, new_header)
+
+                        # specify output file name:
+                        re_results_filename = filepath.rsplit(".",2)[0] + "_reCut_results.txt"
+                        re_output_path = os.path.join("/Users/Wei-Hsien/Desktop", re_results_filename)
+                        print(re_output_path)
+
+                        #with open(re_output_path, "a") as re_output_file:
+                          #  re_output_file.write(re_results_output)
+                    
+                    else:
+                        print("No restriction enzyme cut site search.")
 
                 else:
                     print("This is a peptide sequence.")
@@ -139,10 +176,11 @@ def main():
                     # format new file and write to new FASTA.
                     formatted_seq += ff.formatFasta(seq, new_header)
 
-       
+        with open(re_output_path, "w") as re_output_file:
+            re_output_file.write(re_results_output)
+
         with open(filepath, "w") as output_file:
             output_file.write(formatted_seq)
-
         
         # if search string is defined:
         # search_string = sys.argv[2]
@@ -152,10 +190,6 @@ def main():
     
     # specify your output directory for search and additional analysis results here.          
     ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
-    
-    #================================================
-    # Additional Analysis:  Restriction Enzyme Search
-    #================================================
                 
             
 

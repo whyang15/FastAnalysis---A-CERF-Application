@@ -1,17 +1,10 @@
 # This module contains functions that analyzes nucleotide FASTA files. 
 
+from Bio.SeqUtils import MeltingTemp as mt
+from Bio.Seq import Seq
+from Bio.Restriction import *
 import re
 
-def nuc_content(seq):
-    a = len(re.findall('A',seq))
-    t = len(re.findall('T',seq))
-    c = len(re.findall('C',seq))
-    g = len(re.findall('G',seq))
-    n = len(re.findall('N',seq))
-    gap = len(re.findall('-',seq))
-    at = len(re.findall('AT',seq))  # This only counts instances of AT dinucleotide, not counts of A + counts of T
-    gc = len(re.findall('GC',seq))  # This only counts instances of GC dinucleotide, not counts of G + counts of C
-    return a,t,c,g,n,gap,at,gc
 
 def get_dna_counts(seq):
     ''' Nucleotide code list currently does not include rare or ambigous bases: 
@@ -33,8 +26,15 @@ def get_gc_counts(seq):
     
 # Utilizing built-in packages from BioPython, 
 # write function to calculate melting temps for selected sequences.
-from Bio.SeqUtils import MeltingTemp as mt
-from Bio.Seq import Seq
+# BioPython has three different equations to find Tm
+# Option 1 follows the 'Rule of thumb'.
+# Option 2 uses empirical formulas based on GC content.
+# Option 3 does calculation based on nearest neighbor thermodynamics
+# Both options 2 and 3 could also take in salt and mismatch corrections as extra 
+#   vairables for a more accurate measurement for those calculations. 
+
+# from Bio.SeqUtils import MeltingTemp as mt
+# from Bio.Seq import Seq
 
 def cal_tm(seq, option):
     cal = 0
@@ -50,11 +50,46 @@ def cal_tm(seq, option):
 
     return round(cal,2)
 
-#BioPython has three different equations to find Tm
-#Option 1 follows the 'Rule of thumb'.
-#Option 2 uses empirical formulas based on GC content.
-#Option 3 does calculation based on nearest neighbor thermodynamics
-#Both options 2 and 3 could also take in salt and mismatch corrections as extra vairables for a more accurate measurement for those calculations (not included could be if we want to)
-#seq = "AAGAGAGGAGACCCAACCACACAAGAGGTTGTCCTGGTTGC"
-# print(cal_tm(seq,4))
+
+
+## Restriction Enzyme Cut Sites:
+#from Bio.Restriction import *
+#from Bio.Seq import Seq
+
+def reCut(sequence, rbatch='Common'):
+    seq = Seq(sequence) 
+    rbatch_list = []  # initialize emptly list to store user input list of enzymes
+    rb = []     # initialize empty list to store the rbatch as RestrictionBatch
+    rbatch_list = rbatch.split(',')
+     # if user want to inut their list of restriction enzymes:
+    if rbatch == "Common".lower():
+        cut_data = Analysis(CommOnly, seq)    # only enzymes that have a commercial supplier.
+    elif rbatch == "All".lower():
+        cut_data = Analysis(AllEnzymes, seq)    # all enzymes in the REBASE database.
+    else:
+        print(rbatch)
+        rb = RestrictionBatch(rbatch_list)      # initiate a restriction batch of enzymes.
+        cut_data = Analysis(rb, seq)        # use only the enzymes in the restriction batch.
+    
+
+    enzyme_names = []       # initialize empty list to store enzyme names
+    positions_list = []     # initialize empty list to store position names for each enzyme.
+    frags_list = []         # initialize empty list to store fragments for each enzyme.
+
+    for enz in cut_data.with_sites():
+        try:
+            enzyme_names.append(enz)
+            #print(enzyme_names)
+            positions_list.append(enz.search(seq))    # this is a list
+            #print(positions_list)
+            frags_list.append(enz.catalyse(seq))   # this is a list
+            #print(frags_list)
+            
+        except:
+            continue
+    
+    #return results_dict
+    return enzyme_names, positions_list, frags_list
+
+
 

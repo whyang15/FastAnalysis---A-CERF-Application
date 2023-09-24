@@ -136,6 +136,35 @@ def format_additional_results(additional_output_path, search_string, search_resu
             additional_report.write("------------------\n")
 
 
+# Write a function to reformat Restriction Enzyme cut sites results:
+#def format_re_results(results_string, new_header, re_outfile):
+def format_re_results(enzyme_names, positions_list, frags_list, new_header):
+
+        output = f"{new_header}\n"
+
+        # Iterate over each enzyme and its corresponding positions and fragments
+        if isinstance(enzyme_names, (list,tuple)):
+            for enzyme, pos_list, frags in zip(enzyme_names, positions_list, frags_list):  
+                output += f"{enzyme}\n"
+                for pos, frag in zip(pos_list, frags):
+                    output += f"{pos}\n"
+                    output += f"{frag}\n"
+                output += "\n"
+            output += "-------------------------\n"
+        else:
+            enzyme = enzyme_names
+            pos_list = positions_list
+            frags = frags_list
+            output += f"{enzyme}\n"
+            for pos, frag in zip(pos_list, frags):
+                output += f"{pos}\n"
+                output += f"{frag}\n"
+            output += "--------------------------\n"
+        
+        #with open(re_outfile, 'a') as file:
+         #   file.write(output)
+        return output
+
     
 
 
