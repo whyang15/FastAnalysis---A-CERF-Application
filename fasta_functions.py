@@ -78,7 +78,8 @@ def search_for_string(filepath, search_string=None):
     if search_string is None:
         if len(sys.argv) < 3:
             print("No search word provided.")
-            return found_seqs
+            search_string = ""
+            return found_seqs, search_string
         else:
             search_string = sys.argv[2]
       

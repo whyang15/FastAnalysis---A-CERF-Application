@@ -1,0 +1,18 @@
+>bc1289_Forward || ff output [ record_num=1/6 seqlen=16 base_counts={'A': 3, 'C': 6, 'G': 4, 'T': 3, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=40.0 GC%=60.0 Tm(tm_GC)=47.78'C
+ACGTGAGCTCACTCGC
+
+>bc1290_Forward || ff output [ record_num=2/6 seqlen=16 base_counts={'A': 5, 'C': 3, 'G': 6, 'T': 2, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=40.0 GC%=60.0 Tm(tm_GC)=45.22'C
+CAGTGAGAGCGCGATA
+
+>bc1291_Forward || ff output [ record_num=3/6 seqlen=16 base_counts={'A': 5, 'C': 3, 'G': 4, 'T': 4, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=60.0 GC%=40.0 Tm(tm_GC)=40.09'C
+TGACAGTATCACAGTG
+
+>bc1292_Forward || ff output [ record_num=4/6 seqlen=16 base_counts={'A': 4, 'C': 4, 'G': 2, 'T': 6, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=60.0 GC%=40.0 Tm(tm_GC)=37.53'C
+TAGATCTATCATCGTC
+
+>bc1293_1294_Forward || ff output [ record_num=5/6 seqlen=32 base_counts={'A': 8, 'C': 8, 'G': 8, 'T': 8, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=50.0 GC%=50.0 Tm(tm_GC)=61.4'C
+AGTCTGAGAGAGCTATACGTCAGCACTGCTCT
+
+>bc1294to1296_Forward || ff output [ record_num=6/6 seqlen=48 base_counts={'A': 13, 'C': 15, 'G': 10, 'T': 10, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=50.0 GC%=50.0 Tm(tm_GC)=68.51'C
+ACGTCAGCACTGCTCTCATACATCGCGCAGTAGACTCGCGATACTAGA
+

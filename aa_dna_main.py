@@ -24,6 +24,9 @@ def main():
     new_header_sep = "ff output ["
     formatted_seq=""
     additional_results=""
+    tm = 0
+    option_input=0
+    
 
     if len(sys.argv) < 2:
         print("File path not provided.")
@@ -35,12 +38,6 @@ def main():
     # Search Analysis:
     # Search is optional.  
     # If more occurrences are found, add to the positions list.
-    """ if len(sys.argv) < 2:
-        print("No search word provided.")
-        search_string = ""
-    else:
-        search_string = sys.argv[2] """
-    
     search_results = ff.search_for_string(filepath)
 
     # specify your output directory for search and additional analysis results here.
@@ -53,18 +50,28 @@ def main():
     # Check whether this FASTA file has already gone through CERF Fasta analysis:
     is_modified = ff.check_fasta_modified(filepath)
     if is_modified:
-        # if search string is defined:
+        
         search_results, search_string = ff.search_for_string(filepath)
-        #print(search_results)
-
         # open and save results to separate file. 
         ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
         return
     
-    else: 
+    else:
         # continue with CERF Fasta analysis:
         # open FASTA file and read in as file:
         with open(filepath, "r") as file:
+            tm_input=input("Do you want Melting Temperature information? y/n ")
+            if tm_input=="y".lower():
+                print("BioPython has three different equations to find Tm: \n ")       
+                print("Option 1 follows the 'Rule of thumb'. \n ")
+                print("Option 2 uses empirical formulas based on GC content. \n ")
+                print("Option 3 does calculation based on nearest neighbor thermodynamics. \n")
+                print("NOTE:  The Tm calculations are based on default parameters. \n")
+                print("This calculation does not take into account DNA/DNA, DNA/RNA, RNA/RNA and salt or chemical additives conditions ")
+                option_input=input("Please choose a Tm calculation option: \n")
+            else:
+                print("will not calculate Tm.")
+            
             # get number of records in FASTA file.
             num_records = ff.get_num_records(filepath)  
             
@@ -86,16 +93,25 @@ def main():
                     nuc_counts = nuc.get_dna_counts(seq)
                     print(nuc_counts)
 
+                    # calculate tm:
+                    tm_output = nuc.cal_tm(seq, option_input)
+                    opts={'1':'tm_wallace', '2':'tm_GC', '3':'tm_NN'}
+                    opt=opts.get(option_input)
+                    tm = "Tm(" + opt + ")=" + str(tm_output) + "'C"
                     rc = "record_num="+str(rec_num)+"/"+str(num_records)
                     print(rc)
                     ln = "seqlen=" + str(seqlen)
                     nuccounts = "base_counts=" + str(nuc_counts)
-                    at_pct = round(nuc.get_at_counts(seq) / seqlen, 2)
-                    gc_pct = round(nuc.get_gc_counts(seq) / seqlen, 2)
-                    at = "AT%=" + str(at_pct)
-                    gc = "GC%=" + str(gc_pct)
+                    at_pct = round(nuc.get_at_counts(seq) / seqlen, 1)
+                    gc_pct = round(nuc.get_gc_counts(seq) / seqlen, 1)
+                    at = "AT%=" + str(at_pct*100)
+                    gc = "GC%=" + str(gc_pct*100)
 
-                    new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
+                    if tm != 0:
+                        new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, tm]
+                    else:
+                        new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
+                    
                     new_header = ' '.join(new_header_list)
                     print(new_header)
                     # format new file and write to new FASTA.
@@ -107,14 +123,14 @@ def main():
                     hphobic += aa.get_hydrophobic_counts(seq)
                     hphilic += aa.get_hydrophilic_counts(seq)
 
-                    hphobic_pct = round(hphobic / seqlen, 2)
-                    hphilic_pct = round(hphilic / seqlen, 2)
+                    hphobic_pct = round(hphobic / seqlen, 1)
+                    hphilic_pct = round(hphilic / seqlen, 1)
                     rc = "record_num="+str(rec_num)+"/"+str(num_records)
 
                     ln = "seqlen=" + str(seqlen)
                     aacounts = "aa counts=" + str(aa_counts_line)
-                    hl = "hphilic%=" + str(hphilic_pct)
-                    ho = "hphobic%=" + str(hphobic_pct)
+                    hl = "hphilic%=" + str(hphilic_pct*100)
+                    ho = "hphobic%=" + str(hphobic_pct*100)
                             
                     new_header_list = [header, "||", new_header_sep, rc, ln, aacounts, hl, ho, "]"]
                     new_header = ' '.join(new_header_list)
@@ -129,13 +145,20 @@ def main():
 
         
         # if search string is defined:
-       # search_string = sys.argv[2]
-        search_results, search_string = ff.search_for_string(filepath)
-        #print(search_results)
+        # search_string = sys.argv[2]
+        if search_string is not None:
+            search_results, search_string = ff.search_for_string(filepath)
+            #print(search_results)
     
     # specify your output directory for search and additional analysis results here.          
     ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
     
+    #================================================
+    # Additional Analysis:  Restriction Enzyme Search
+    #================================================
+                
+            
+
 
 
 ###-----------------------------------------------------
