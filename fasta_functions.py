@@ -17,7 +17,7 @@ def get_num_records(filepath):
 
 # parse each record.  determine whether record has been modified.
 def check_fasta_modified(filepath):
-    new_header_sep = "ff output ["
+    new_header_sep = "FA output["
     with open(filepath, "r") as file:
         for record in SeqIO.parse(file, "fasta"):
             header = record.description
@@ -165,10 +165,3 @@ def format_re_results(enzyme_names, positions_list, frags_list, new_header):
          #   file.write(output)
         return output
 
-    
-
-
-
-
-
-  

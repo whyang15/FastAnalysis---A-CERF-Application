@@ -1,0 +1,6 @@
+>sequence1 || FA output[ record_num=1/2 seqlen=16 base_counts={'A': 4, 'C': 3, 'G': 5, 'T': 4, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=50.0 GC%=50.0 Tm(tm_wallace)=48.0'C || FA output[ record_num=1/2 seqlen=16 base_counts={'A': 4, 'C': 3, 'G': 5, 'T': 4, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=50.0 GC%=50.0 Tm(tm_wallace)=48.0'C || FA output[ record_num=1/2 seqlen=16 base_counts={'A': 4, 'C': 3, 'G': 5, 'T': 4, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=50.0 GC%=50.0
+ATGCTACCGTAGTGAG
+
+>sequence2 || FA output[ record_num=2/2 seqlen=68 base_counts={'A': 21, 'C': 21, 'G': 8, 'T': 18, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=60.0 GC%=40.0 Tm(tm_wallace)=194.0'C || FA output[ record_num=2/2 seqlen=68 base_counts={'A': 21, 'C': 21, 'G': 8, 'T': 18, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=60.0 GC%=40.0 Tm(tm_wallace)=194.0'C || FA output[ record_num=2/2 seqlen=68 base_counts={'A': 21, 'C': 21, 'G': 8, 'T': 18, 'U': 0, 'N': 0, '.': 0, '-': 0} AT%=60.0 GC%=40.0
+AATTACTAATCAGCCCATGATCATAACATAACTGTGTATGTCTTAGAGGACCAAACCCCCCTCCTTCC
+

@@ -5,6 +5,8 @@ from Bio.Seq import Seq
 from Bio.Restriction import *
 import re
 
+from Nucleotides.Nucleotide_Anaylsis import codon_generator
+
 
 def get_dna_counts(seq):
     ''' Nucleotide code list currently does not include rare or ambigous bases: 
@@ -92,4 +94,67 @@ def reCut(sequence, rbatch='Common'):
     return enzyme_names, positions_list, frags_list
 
 
+## Write functions for ORF finding:
+#from Bio.SeqUtils import gc_fraction
 
+def coding_region_finder(codon_list,frame):
+    stop_codons = ['TAA', 'TGA', 'TAG']     # This is list of STOP codons from the standard SGCO translation table from NCBI. 
+    coding_regions = {}     # dictionary that saves the count and coding region sequence found in a frame. region 1:coding seq
+    write = False
+    temp_seq = ''
+    count = 0
+    for pos in range (frame, len(codon_list)-2, 3):
+        codon = codon_list[pos:pos+3]
+        if codon == 'ATG':
+            write = True
+        if write == True:
+            temp_seq += codon
+        if codon in stop_codons:
+            write = False
+            if len(temp_seq)>3:         # if template length is > 30 bp as default.
+                coding_regions[count] = temp_seq
+                count += 1
+            temp_seq = ''
+    if temp_seq != '' and 'ATG' in temp_seq:
+        coding_regions[count] = temp_seq
+    return coding_regions 
+
+
+def find_orfs(seq):
+    import nuc_functions
+
+    start = 0
+    end = 0
+    length_nt = 0
+    length_aa = 0
+    orf_records = []
+    orf_seq = ""
+
+    
+    revCompSeq = Seq(seq).reverse_complement()
+    for strand, working_seq in [('+',seq), ('-', revCompSeq)]:
+        working_seq = Seq(working_seq)
+        #count = 1
+        for frame in range (3):
+            seq_dict = nuc_functions.coding_region_finder(working_seq,frame)
+            #print(seq_dict)
+            count = 1
+            for seq in seq_dict:
+                
+                coding_seq = Seq(seq_dict[seq])
+                translated_seq = coding_seq.translate()
+
+                length_nt = len(coding_seq)
+                length_aa = len(translated_seq)
+                start = working_seq.index(coding_seq)+1
+                end = start + length_nt
+                                    
+                orf_string = "ORF{} Strand{} Frame{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(frame+1,strand,count,start,end,str(length_nt),str(length_aa))
+                orf_seq = str(orf_string) + str(translated_seq) + "\n"
+                                   
+                count +=1
+
+                orf_records.append(str(orf_seq))
+
+    return list(set(orf_records))
+                            

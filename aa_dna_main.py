@@ -6,8 +6,10 @@
 import sys
 from collections import Counter
 from Bio import SeqIO
+from Bio.Seq import Seq
 from Bio.Restriction import * 
 from Bio.Restriction.PrintFormat import PrintFormat
+from Bio.SeqRecord import SeqRecord
 import os
 import fasta_functions as ff
 import aa_functions as aa
@@ -21,11 +23,15 @@ def main():
     num_records = 0
     rec_num = 0
     
-    new_header_sep = "ff output ["
+    new_header_sep = "FA output["
     formatted_seq=""
     additional_results=""
     option_input=0
     re_results_output = ""
+    re_output_path = ""
+    all_orf_records = []
+    orf_records =[]     # initialize empty record to store outputs.
+                       
 
     if len(sys.argv) < 2:
         print("File path not provided.")
@@ -79,13 +85,18 @@ def main():
             re_all_input = input("Search for restriction enzyme cut sites? y/n ")
             if re_all_input=="y".lower():
                 print("You can enter a list of restriction enzymes to search for, or look through restriction enzyme database (All or Common).")
-                print(" 'All' will look for restriction enzyme cut sites of all enzymes in database.")
-                print(" 'Common' will look for restriction enzyme cut sites of commonly used restriction enzymes.")
+                print(" 'all' will look for restriction enzyme cut sites of all enzymes in database.")
+                print(" 'common' will look for restriction enzyme cut sites of commonly used restriction enzymes.")
                     
-                re_batch_input = input("Enter list of retricton enzymes separated by ','. Use correct RE naming convention. Or enter 'All', or 'Common': ")
+                re_batch_input = input("Enter list of retricton enzymes separated by ','. Use correct RE naming convention. Or enter 'all', or 'common': ")
             else:
                 re_all_input=="n".lower()
                 print("will not do restriction enzyme searches.")   
+            
+
+            # Ask user if they want to find ORF:
+            orf_input=input("Do you want to find ORF?  Your FASTA has to contain coding sequences only. y/n ")
+
             
             # get number of records in FASTA file.
             num_records = ff.get_num_records(filepath)  
@@ -137,7 +148,6 @@ def main():
 
                     # restriction enzyme digests:
                     if re_all_input == "y".lower():
-                        
                         enzyme_names, positions_list, frags_list = nuc.reCut(seq, re_batch_input)
                         
                         # accumulate the formatted results:
@@ -147,12 +157,29 @@ def main():
                         re_results_filename = filepath.rsplit(".",2)[0] + "_reCut_results.txt"
                         re_output_path = os.path.join("/Users/Wei-Hsien/Desktop", re_results_filename)
                         print(re_output_path)
-
-                        #with open(re_output_path, "a") as re_output_file:
-                          #  re_output_file.write(re_results_output)
                     
+                        with open(re_output_path, "w") as re_output_file:
+                            re_output_file.write(re_results_output)
                     else:
                         print("No restriction enzyme cut site search.")
+                    
+
+                    
+                    # Open-Reading-Frame Finder:
+                    if orf_input=="y".lower():
+                        orf_records = nuc.find_orfs(seq)
+
+                        # format orf_records:
+                        orf_records_string = ">" + new_header + "\n" + "".join(orf_records)
+                        
+                        # Add the ORF records to the list:
+                        all_orf_records.append(orf_records_string)
+                    
+                    else:
+                        print("no orf finding performed.")
+
+
+                    
 
                 else:
                     print("This is a peptide sequence.")
@@ -176,9 +203,29 @@ def main():
                     # format new file and write to new FASTA.
                     formatted_seq += ff.formatFasta(seq, new_header)
 
-        with open(re_output_path, "w") as re_output_file:
-            re_output_file.write(re_results_output)
+        
+        '''with open(re_output_path, "w") as re_output_file:
+            re_output_file.write(re_results_output)'''
+        
+        # format orf_records:
+        # Write all ORF records to a single output file:
+        if all_orf_records:
+            # specify output file name:
+            orf_results_filename = filepath.rsplit(".",2)[0] + "_orf_results.txt"
+            orf_output_path = os.path.join("/Users/Wei-Hsien/Desktop", orf_results_filename)
+                        
+            # join all ORF records:
+            all_orf_records_string = "\n".join(all_orf_records)
 
+            # write all ORF records to output file:
+            with open(orf_output_path, "w") as orf_output_file:
+                orf_output_file.write(all_orf_records_string)
+
+        else:
+            print("No ORFS found in any sequence.")   
+
+
+        # format and write out final FASTA:
         with open(filepath, "w") as output_file:
             output_file.write(formatted_seq)
         
