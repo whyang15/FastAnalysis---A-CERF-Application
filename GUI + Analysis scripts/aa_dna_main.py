@@ -9,6 +9,7 @@ import re
 import pathlib
 from collections import Counter
 from Bio import SeqIO
+from Bio.SeqUtils import MeltingTemp as mt
 
 import fasta_functions as ff
 import aa_functions as aa
@@ -22,6 +23,10 @@ def pass_file(filepath):
     rec_num = 0
     num_records = 0
     new_header_sep = "ff output ["
+    
+    formatted_seq_Wallace=""
+    formatted_seq_GC= ""
+    formatted_seq_NN = ""
     formatted_seq=""
 
     modified = False
@@ -34,7 +39,7 @@ def pass_file(filepath):
             if new_header_sep in header:
                 modified = True
                 message = str("This file has already been modified by CERF Fasta Analysis.")
-                return modified, message, formatted_seq
+                return modified, message, formatted_seq_Wallace, formatted_seq_GC, formatted_seq_NN, formatted_seq
                 break
             else:
                 modified = False
@@ -60,12 +65,35 @@ def pass_file(filepath):
                 at = "AT%=" + str(at_pct)
                 gc = "GC%=" + str(gc_pct)
 
-                new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
-                new_header = ' '.join(new_header_list)
-                print(new_header)
-                # format new file and write to new FASTA.
+                # calculate tm:
+                header_TM_Wallace = "Tm(Tm_Wallace)= " + str(round(mt.Tm_Wallace(seq),2)) + "'C"
+                header_TM_GC = "Tm(Tm_GC)= " + str(round(mt.Tm_GC(seq),2)) + "'C"
+                header_TM_NN = "Tm(Tm_NN)= " + str(round(mt.Tm_NN(seq),2)) + "'C"
+
+                headerlist_Wallace = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_Wallace]
+                headerlist_GC = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_GC]
+                headerlist_NN = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_NN]
+                headerlist_WO_TM = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
+                
+                Wallace_header = ' '.join(headerlist_Wallace)
+                GC_header = ' '.join(headerlist_GC)
+                NN_header = ' '.join(headerlist_NN)
+                new_header = ' '.join(headerlist_WO_TM)
+
+                formatted_seq_Wallace += ff.formatFasta(seq, Wallace_header)
+                formatted_seq_GC += ff.formatFasta(seq, GC_header)
+                formatted_seq_NN += ff.formatFasta(seq, NN_header)
                 formatted_seq += ff.formatFasta(seq, new_header)
-                print(formatted_seq)
+
+                
+                #print(Wallace_header, GC_header, NN_header, new_header)
+                
+                # format new file based on TM methods
+##                formatted_seq_Wallace += ff.formatFasta(seq, Wallace_header)
+##                formatted_seq_GC += ff.formatFasta(seq, GC_header)
+##                formatted_seq_NN += ff.formatFasta(seq, NN_header)
+##                formatted_seq += ff.formatFasta(seq, new_header)
+                
             else:
                 aa_counts_line = aa.get_aa_counts(seq)
                 hphobic += aa.get_hydrophobic_counts(seq)
@@ -87,7 +115,7 @@ def pass_file(filepath):
                 formatted_seq += ff.formatFasta(seq, new_header)
         print(formatted_seq)
                     
-    return modified, message, formatted_seq
+    return modified, message, formatted_seq_Wallace, formatted_seq_GC, formatted_seq_NN, formatted_seq
     
 def commit_results(filepath, data):
     myfile = open(filepath, 'w')
@@ -97,6 +125,7 @@ def commit_results(filepath, data):
 def searching(filepath, string):
     #this works on Windows only, potentially Mac?
     desktop = pathlib.Path.home()/'Desktop'
+    count = 0
 
     #filepath is passed in from the GUI.
     #string will be the users search, passed in from the GUI
@@ -105,12 +134,16 @@ def searching(filepath, string):
     # specify your output directory for search and additional analysis results here.
     additional_results = os.path.basename(filepath)
     additional_results_filename = (os.path.splitext(additional_results)[0]) + "_addtional_results.txt"
-    #modify code so will go to the users desktop without having to specify personal path
-    #so far, will write search results to dowloads instead of Desktop
     
     #include if/else statement to see whether a a file already exists, so files dont become overwritten every time a new search is performed?
     #This would allows users to perform multiple searches, and each search would have its own file.
     additional_output_path = os.path.join(desktop, additional_results_filename)
+    #if a search has already been performed and a file has been written to the desktop, an new file with a +1 count in the name will be added to the desktop
+    #work on bug
+    if os.path.exists(additional_output_path):
+        count += 1
+        additional_results_filename = (os.path.splitext(additional_results)[0]) + "_" + str(count) +"_addtional_results.txt"
+        additional_output_path = os.path.join(desktop, additional_results_filename)
 
     search_results, search_string = ff.search_for_string(filepath, string)
     ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
