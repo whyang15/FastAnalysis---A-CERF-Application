@@ -1,7 +1,8 @@
 # This module contains functions that checks the input FASTA file for format, content, and previous analysis done.
 from collections import Counter
 #import os
-import re
+import re, sys
+from Bio import SeqIO
 
 
 ''' write a function to read in FASTA.  This function reads in the entire sequence.
@@ -16,43 +17,6 @@ def is_dna_or_aa(sequence, type):
         return True
     else:
         return False
-
-
-# write a function that checks whether file exists. #
-""" def check_Fasta_exists(filename):
-    # search_path = "/Users/Wei-Hsien/Desktop/"         # this will have to be defined by GUI?
-    if len(sys.argv) < 2:
-        print("File path not provided.")
-        return
-    
-    search_path = sys.argv[1]
-    full_path = None    # initialize the full_path variable
-    filename = None    # initialize the filename variable
-    
-    for subdir, dirs, files in os.walk(search_path):
-        for file in files:
-            filepath = subdir + os.sep + file
-            extensions = (".txt", ".fasta", ".fa")
-            if filepath.endswith(extensions):
-                full_path = filepath
-                filename = os.path.basename(full_path)
-                print(f"The path of {filename} is {full_path}")
-
-                break
-
-    # read input file:
-    if full_path is not None:
-        try:
-            #file = open(full_path, 'r')
-            print(f"The {filename} file exists")
-            return full_path
-        except FileNotFoundError:
-            print(f"The {filename} file does not exist.")
-    else:
-        print("No matching FASTA file found.")
-
-    return None   # Return None if no file is found or can be opened. """
-
 
 # Write function to add values in 2 different dictionaries together.
 def add_dict_values(dict1, dict2):
@@ -83,4 +47,82 @@ def formatFasta(seq, new_header):
     #fasta.close()
 
 
+def search_for_string(filepath, search_string):
+    # search for occurrences of the string in the sequence and store here:
+    found_seqs = []
+
+    search_string = search_string.lower() 
+
+    # open and parse the fasta file. 
+    for record in SeqIO.parse(filepath, "fasta"):
+        header = str(record.description)
+        sequence = str(record.seq)
+
+        # convert sequence to lower case for case-insensitive search
+        sequence = sequence.lower()
+
+        positions = []
+        start_pos = 0
+        while True:
+            pos = sequence.find(search_string, start_pos)
+            if pos == -1:
+                break
+
+            # store the position of the occurrence:
+            positions.append(pos)
+
+            # update the start position of next search:
+            start_pos = pos + 1
+
+        if positions:
+            found_seqs.append({
+                'record': header,
+                'positions': positions
+            })
+    
+    return found_seqs, search_string
+
+
+# Write a function to reformat search results: 
+def format_additional_results(additional_output_path, search_string, search_results):
+    with open(additional_output_path, "w") as additional_report:
+        output_str = 'Search Results for {} are shown here: '.format(search_string)
+        additional_report.write(output_str)
+
+        for result in search_results:
+            header = result['record']
+            positions = result['positions']
+
+            additional_report.write(f"\nHeader: {header}\n")
+            additional_report.write(f"Number of occurrences: {len(positions)}\n")
+            additional_report.write("Positions: \n")
+
+            for pos in positions:
+                additional_report.write(str(pos) + "\n")
+                
+            additional_report.write("------------------\n")
   
+def format_re_results(enzyme_names, positions_list, frags_list, new_header):
+
+        output = f"{new_header}\n"
+
+        # Iterate over each enzyme and its corresponding positions and fragments
+        if isinstance(enzyme_names, (list,tuple)):
+            for enzyme, pos_list, frags in zip(enzyme_names, positions_list, frags_list):  
+                output += f"{enzyme}\n"
+                for pos, frag in zip(pos_list, frags):
+                    output += f"{pos}\n"
+                    output += f"{frag}\n"
+                output += "\n"
+            output += "-------------------------\n"
+        else:
+            enzyme = enzyme_names
+            pos_list = positions_list
+            frags = frags_list
+            output += f"{enzyme}\n"
+            for pos, frag in zip(pos_list, frags):
+                output += f"{pos}\n"
+                output += f"{frag}\n"
+            output += "--------------------------\n"
+    
+        return output
