@@ -69,13 +69,20 @@ def pass_file(filepath):
                 gc = "GC%=" + str(gc_pct)
 
                 # calculate tm:
-                header_TM_Wallace = "Tm(Tm_Wallace)= " + str(round(mt.Tm_Wallace(seq),2)) + "'C"
-                header_TM_GC = "Tm(Tm_GC)= " + str(round(mt.Tm_GC(seq),2)) + "'C"
-                header_TM_NN = "Tm(Tm_NN)= " + str(round(mt.Tm_NN(seq),2)) + "'C"
+                #For sequences greater then 500 bps long, Tm will not be calculated to save computational time
+                if seqlen<= 500:
+                    header_TM_Wallace = "Tm(Tm_Wallace)= " + str(round(mt.Tm_Wallace(seq),2)) + "'C"
+                    header_TM_GC = "Tm(Tm_GC)= " + str(round(mt.Tm_GC(seq),2)) + "'C"
+                    header_TM_NN = "Tm(Tm_NN)= " + str(round(mt.Tm_NN(seq),2)) + "'C"
 
-                headerlist_Wallace = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_Wallace]
-                headerlist_GC = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_GC]
-                headerlist_NN = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_NN]
+                    headerlist_Wallace = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_Wallace]
+                    headerlist_GC = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_GC]
+                    headerlist_NN = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, header_TM_NN]
+                else:
+                    headerlist_Wallace = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
+                    headerlist_GC = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
+                    headerlist_NN = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
+                    
                 headerlist_WO_TM = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc]
                 
                 Wallace_header = ' '.join(headerlist_Wallace)
@@ -208,7 +215,8 @@ def restriction_enzyme(filepath, string, tm_dropdown):
 
                     #tm calc, will be included automatically in the header data if a Tm method is selected in the dropdown menu
                     #if no selection is made or a "Tm_None" is selected, Tm will not be included in the reulsts file
-                    if tm_dropdown == "Tm_Wallace" or tm_dropdown == "Tm_GC" or tm_dropdown == "Tm_NN":
+                    #For sequences greater then 500 bps long, Tm will not be calculated to save computational time
+                    if (tm_dropdown == "Tm_Wallace" or tm_dropdown == "Tm_GC" or tm_dropdown == "Tm_NN") and seqlen <=500:
                         tm = nuc.cal_tm(seq, tm_dropdown)
                         tm_string = "Tm(" + tm_dropdown + ")=" + str(tm) + "'C"
                         new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, tm_string]
@@ -267,6 +275,7 @@ def calculate_ORFs(filepath, string, tm_dropdown):
                 else:
                 
                     seqlen=len(seq)
+                    print(seqlen)
                     nuc_counts = nuc.get_dna_counts(seq)
                     rec_num += 1
                     
@@ -281,7 +290,8 @@ def calculate_ORFs(filepath, string, tm_dropdown):
 
                     #tm calc, will be included automatically in the header data if a Tm method is selected in the dropdown menu
                     #if no selection is made or a "Tm_None" is selected, Tm will not be included in the reulsts file
-                    if tm_dropdown == "Tm_Wallace" or tm_dropdown == "Tm_GC" or tm_dropdown == "Tm_NN":
+                    #For sequences greater then 500 bps long, Tm will not be calculated to save computational time
+                    if (tm_dropdown == "Tm_Wallace" or tm_dropdown == "Tm_GC" or tm_dropdown == "Tm_NN") and seqlen <=500:
                         tm = nuc.cal_tm(seq, tm_dropdown)
                         tm_string = "Tm(" + tm_dropdown + ")=" + str(tm) + "'C"
                         new_header_list = [header, "||", new_header_sep, rc, ln, nuccounts, at, gc, tm_string]
