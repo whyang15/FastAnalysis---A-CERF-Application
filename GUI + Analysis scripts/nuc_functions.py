@@ -58,10 +58,14 @@ def reCut(sequence, rbatch):
     rb = []     # initialize empty list to store the rbatch as RestrictionBatch
     rbatch_list = rbatch.split(',')
     
-     # if user want to inut their list of restriction enzymes:
-    if rbatch == "Common" or "common" or "COMMON":
+    #regex allows user to enter "all" or "common" in any case
+    search_ALL = re.findall('(?i)all', rbatch)
+    search_COMMON = re.findall('(?i)common', rbatch)
+    
+    # if user want to input their list of restriction enzymes:
+    if search_COMMON:
         cut_data = Analysis(CommOnly, seq)    # only enzymes that have a commercial supplier.
-    elif rbatch == "All" or "ALL" or "all":
+    elif search_ALL:
         cut_data = Analysis(AllEnzymes, seq)    # all enzymes in the REBASE database.
     else:
         print(rbatch)
