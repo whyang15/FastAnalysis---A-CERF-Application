@@ -105,7 +105,7 @@ def main(page: flet.Page):
     NN = flet.Text()
 
     #icons
-    string_tb = flet.TextField(label="Enter string search:")
+    string_tb = flet.TextField(bgcolor=flet.colors.BLUE_50, label="Enter string search:")
     b = flet.ElevatedButton(text="Search", icon=flet.icons.SEARCH, on_click=search_button_clicked)
     file_picker = flet.FilePicker(on_result=on_dialog_result)
     f = flet.Row([flet.ElevatedButton("Upload File", icon=flet.icons.UPLOAD_FILE,
@@ -113,7 +113,7 @@ def main(page: flet.Page):
 
 
     #restriction enzyme search field
-    re_enzyme_search = flet.TextField(label="Enter the Restriction enzyme search: You can enter a list of restriction enzymes to search for, or look through restriction enzyme database (All or Common).")
+    re_enzyme_search = flet.TextField(bgcolor=flet.colors.BLUE_50, label="Enter the Restriction enzyme search: You can enter a list of restriction enzymes to search for, or look through restriction enzyme database (All or Common).")
     re = flet.ElevatedButton(text="Search", icon=flet.icons.SEARCH, on_click=re_enzyme_search_clicked)
 
     #button for generating ORF data for the file
@@ -141,8 +141,8 @@ def main(page: flet.Page):
      
     #An info button will be displayed along with the commit button, when selected it will display a container at the bottom of the page.
     #The container will display the information that will be written back to the file if the user decides to select commit
-    tm_dropdown = flet.Dropdown(bgcolor = flet.colors.WHITE, border_color = flet.colors.BLACK, label="Tm: Default = Tm_None", hint_text="Select a Tm method to include in modified header.",
-                                options=[flet.dropdown.Option("Tm_None"),flet.dropdown.Option("Tm_Wallace"),flet.dropdown.Option("Tm_GC"), flet.dropdown.Option("Tm_NN"),],)
+    tm_dropdown = flet.Dropdown(label="Tm: Default = Tm_None", hint_text="Select a Tm method to include in modified header.",
+                                options=[flet.dropdown.Option("Tm_None"),flet.dropdown.Option("Tm_Wallace"),flet.dropdown.Option("Tm_GC"), flet.dropdown.Option("Tm_NN"),], filled = True, bgcolor=flet.colors.BLUE_50)
     c = flet.Row([flet.ElevatedButton(bgcolor = flet.colors.BLUE_500, color = flet.colors.WHITE, text="Commit Results", on_click=commit_clicked)], alignment=flet.MainAxisAlignment.END, vertical_alignment=flet.CrossAxisAlignment.END)
 
     #Potential statement for using sys.argv to check whether the last command line statement was passing in a file of a valid extension [ext]
