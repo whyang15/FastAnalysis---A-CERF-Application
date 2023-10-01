@@ -37,6 +37,9 @@ def pass_file(filepath):
     message = 'file contents not valid'
     # check whether this FASTA file has already gone through CERF Fasta analysis:
     with open(filepath, "r") as file:
+        # get number of records in FASTA file.
+        num_records = ff.get_num_records(filepath)  
+        
         for record in SeqIO.parse(file, "fasta"):
             header = record.description
             if new_header_sep in header:
@@ -183,6 +186,9 @@ def restriction_enzyme(filepath, string, tm_dropdown):
     
 
     with open(filepath, "r") as file:
+        # get number of records in FASTA file.
+        num_records = ff.get_num_records(filepath)  
+            
         #parse through the FASTA file using BioPython
         for record in SeqIO.parse(file, "fasta"):
 
@@ -258,6 +264,10 @@ def calculate_ORFs(filepath, string, tm_dropdown):
 
     #turn into a seperate method?
     with open(filepath, "r") as file:
+
+        # get number of records in FASTA file.
+        num_records = ff.get_num_records(filepath)  
+            
         #parse through the FASTA file using BioPython
         for record in SeqIO.parse(file, "fasta"):
 

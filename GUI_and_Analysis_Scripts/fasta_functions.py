@@ -18,6 +18,16 @@ def is_dna_or_aa(sequence, type):
     else:
         return False
 
+# Write function to get the number of records in a FASTA file.
+def get_num_records(filepath):
+    with open(filepath, "r") as file:
+        # get number of records in a FASTA file.
+        records = list(SeqIO.parse(file, "fasta"))
+        number_records = len(records)
+        print(f"This fasta contains {number_records} records.")
+        return number_records
+    
+
 # Write function to add values in 2 different dictionaries together.
 def add_dict_values(dict1, dict2):
     counter1 = Counter(dict1)
