@@ -31,8 +31,8 @@ def main(page: flet.Page):
     formatted_seq = ""
 
     application_description = """\nCommit Results: Selecting this icon will update all headers in the uploaded FASTA file. New header format (where 'X' denotes calculated value):
-                                  -Nucleic Acid: original header + || ff output [ record_num=X seqlen=X base_counts={'A': X, 'C': X, 'G': X, 'T': X, 'U': X, 'N': X, '.': X, '-': X} AT%=X GC%=X Tm(Tm_GC)= X'C'
-                                  -Amino Acids: original header + || ff output [ seqlen=X aa counts={'A': X, 'C': X, 'D': X, 'E': X, 'F': X, 'G': X, 'H': X, 'I': X, 'K': X, 'L': X, 'M': X, 'N': X, 'P': X, 'Q': X, 'R': X, 'S': X, 'T': X,
+                                  -Nucleic Acid: original header + || FA output[ record_num=X seqlen=X base_counts={'A': X, 'C': X, 'G': X, 'T': X, 'U': X, 'N': X, '.': X, '-': X} AT%=X GC%=X Tm(Tm_GC)= X'C'
+                                  -Amino Acids: original header + || FA output[ seqlen=X aa counts={'A': X, 'C': X, 'D': X, 'E': X, 'F': X, 'G': X, 'H': X, 'I': X, 'K': X, 'L': X, 'M': X, 'N': X, 'P': X, 'Q': X, 'R': X, 'S': X, 'T': X,
                                   'V': X, 'W':X , 'Y': X, '-': X, '*': X} hphilic_pct=X hphobic_pct=X ]
                                   \nTm: Tm is an optional selection. Selecting Tm will include Tm in only nucleic acid sequence headers. Tm will not be calculated if a sequence exceeds 500bps.
                                       -Tm is calculated using BioPython. There are 3 methods to select from. Calculations are based on default parameters.
