@@ -1,4 +1,3 @@
->CEQ30829.1 Small [[Clostridium] sordellii]
-MNKPVNQNAKKALNMLKMEIANEQGYNYNPVSDKIESNAPQNTLEGISKNVLAGEQVGGAMTKSLVSKGE
-EILLKMYKDK
+>CEQ30829.1 Small [[Clostridium] sordellii] || FA output[ record_num=1/1 seqlen=80 aa counts={'A': 6, 'C': 0, 'D': 2, 'E': 7, 'F': 0, 'G': 6, 'H': 0, 'I': 4, 'K': 11, 'L': 7, 'M': 5, 'N': 10, 'P': 3, 'Q': 4, 'R': 0, 'S': 5, 'T': 2, 'V': 5, 'W': 0, 'Y': 3, '-': 0, '*': 0} hphilic_pct=0.55 hphobic_pct=0.45 ]
+MNKPVNQNAKKALNMLKMEIANEQGYNYNPVSDKIESNAPQNTLEGISKNVLAGEQVGGAMTKSLVSKGEEILLKMYKDK
 

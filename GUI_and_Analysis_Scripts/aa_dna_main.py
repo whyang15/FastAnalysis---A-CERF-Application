@@ -26,7 +26,7 @@ def pass_file(filepath):
     hphilic = 0
     rec_num = 0
     num_records = 0
-    new_header_sep = "ff output ["
+    new_header_sep = "FA output["
     
     formatted_seq_Wallace=""
     formatted_seq_GC= ""
@@ -39,7 +39,7 @@ def pass_file(filepath):
     with open(filepath, "r") as file:
         # get number of records in FASTA file.
         num_records = ff.get_num_records(filepath)  
-        
+
         for record in SeqIO.parse(file, "fasta"):
             header = record.description
             if new_header_sep in header:
@@ -101,6 +101,7 @@ def pass_file(filepath):
                 message =str('\n\n' + message + "This FASTA file contains nucleotides sequences. \nSelect a Tm method from the dropdown. If Tm is selected, Tm will be included in restriction enzyme search and committed data.")
 
             else:
+                rc = "record_num="+str(rec_num)+"/"+str(num_records)
                 aa_counts_line = aa.get_aa_counts(seq)
                 hphobic += aa.get_hydrophobic_counts(seq)
                 hphilic += aa.get_hydrophilic_counts(seq)
@@ -112,10 +113,10 @@ def pass_file(filepath):
                 hl = "hphilic_pct=" + str(hphilic_pct)
                 ho = "hphobic_pct=" + str(hphobic_pct)
                           
-                new_header_list = [header, "||", new_header_sep, ln, aacounts, hl, ho, "]"]
+                new_header_list = [header, "||", new_header_sep, rc, ln, aacounts, hl, ho, "]"]
                 new_header = ' '.join(new_header_list)
                 print(new_header)
-                print(new_header_list)
+                #print(new_header_list)
 
                 # format new file and write to new FASTA.
                 formatted_seq += ff.formatFasta(seq, new_header)
