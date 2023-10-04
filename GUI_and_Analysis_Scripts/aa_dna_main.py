@@ -181,7 +181,7 @@ def restriction_enzyme(filepath, string, tm_dropdown):
     additional_output_path = make_results_folder(filepath, string, extension)
     re_results_output = ""
     
-    new_header_sep = "ff output ["
+    new_header_sep = "FA output["
     rec_num = 0
     num_records = 0
     
@@ -259,7 +259,7 @@ def calculate_ORFs(filepath, string, tm_dropdown):
     all_orf_records = []
     orf_records =[]     # initialize empty record to store outputs.
     
-    new_header_sep = "ff output ["
+    new_header_sep = "FA output["
     rec_num = 0
     num_records = 0
 
