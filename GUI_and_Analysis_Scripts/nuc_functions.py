@@ -42,7 +42,7 @@ def cal_tm(seq, option):
     elif option == "Tm_GC":
         cal = mt.Tm_GC(seq)
     elif option == "Tm_NN":
-        cal = mt.Tm_NN(seq, 3)
+        cal = mt.Tm_NN(seq)
     else:
         cal = 0
 
