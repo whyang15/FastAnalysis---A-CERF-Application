@@ -19,6 +19,8 @@ def main(page: flet.Page):
     page.scroll = "adaptive"
     #main page background color
     page.bgcolor = flet.colors.BLUE_100
+    #make light mode the display mode for the application
+    page.theme_mode = flet.ThemeMode.LIGHT
 
     #text boxes for displaying selected file name and full path, and analysis results text
     file_name = flet.Text()
