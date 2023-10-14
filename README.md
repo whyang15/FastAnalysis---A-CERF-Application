@@ -12,11 +12,11 @@ What makes FastAnalysis unique is that it offers several optional sequence analy
 
 A Mac and Windows desktop app is included in this repository, in addition to the original FastAnalysis scripts. The FastAnalysis scripts require Python 3.7 or greater, and require Flet and BioPython packages. Their are 5 scripts: FastAnalysis.py, aa_dna_main.py, aa_functions.py, fasta_functions.py, and nuc_functions.py. FastAnalysis.py contains main() and the GUI code. The remaining scripts contain the backend FASTA analysis. To run the scripts, ensure all scripts are contained within the same directory. FastAnalysis.py can be opened and ran in your IDE of your choice, or use the command line and navigate to the directory containing the script files and enter "python FastAnalysis.py". To pass a file directly into CERF, the command "python FastAnalysis.py {path to your file}" can be used.
 
+NOTE: Only the following FASTA extensions types are supported by FastAnalysis: ".fasta", ".fa", ".fna", ".faa". 
+
 ### Imported Python Packages/Modules:
 
 flet, BioPython (Bio.SeqUtils, Bio.Seq, Bio.Restriction, Bio.SeqRecord), re, os, sys, pathlib, collections
-
-NOTE: Only the following FASTA extensions types are supported by FastAnalysis: ".fasta", ".fa", ".fna", ".faa". 
 
 ## Installation:
 
