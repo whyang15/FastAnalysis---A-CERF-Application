@@ -14,11 +14,17 @@ A Mac and Windows desktop app is included in this repository, in addition to the
 Imported Packages/Modules:
 
 flet
+
 BioPython (Bio.SeqUtils, Bio.Seq, Bio.Restriction, Bio.SeqRecord)
+
 re
+
 os
+
 sys
+
 pathlib
+
 collections
 
 NOTE: Only the following FASTA extensions types are supported by FastAnalysis: ".fasta", ".fa", ".fna", ".faa". 
@@ -70,4 +76,4 @@ Nucleic Acids: {original header} + || FA output[record_num=X seqlen=X base_count
 
 ## Limitations/Features Not Supported
 
-It should be noted that during the testing phase of this project, FastAnalysis was unable to open a test file contianing 
+
