@@ -1,7 +1,6 @@
 # FastAnalysis - A CERF Application 
 
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) [![](http://flutter-badge.zaynjarvis.com/version/flutter_signin_button)](https://pub.dartlang.org/packages/flutter_signin_button)
-
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) 
 ## What is FastAnalysis?
 FastAnalysis is a stand alone application developed for Lab-Ally as our capstone project. Lab-Ally LLC is an Ohio based company, founded by CEO Rob Day in 2013. Lab-Ally requested an application that would work alongside their CERF 5.0 ELN software (https://lab-ally.com/products/cerf-eln/). CERF has a useful check-in and check-out feature that allows the file to be viewed and modified using outside applications, file modifications are traced when a file is checked back into CERF. Lab-Ally requested an application that could handle a type of bioinformatics file, and would analyze the files contents, perform useful analysis, then append the analysis data to the file where it could be used as metadata once checked back into CERF. The updated metadata makes the file more easily searchable, this is especially useful if a user is working with many files.
 
