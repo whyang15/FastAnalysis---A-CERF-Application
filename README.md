@@ -1,7 +1,7 @@
 # <FastAnalysis - A CERF Application>
 
 ## Badges
-https://img.shields.io/pypi/pyversions/:flet
+https://img.shields.io/pypi/pyversions/:Bio
 
 
 ## What is FastAnalysis?
