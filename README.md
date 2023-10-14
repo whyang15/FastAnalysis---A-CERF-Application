@@ -31,11 +31,11 @@ To download the Mac or Windows App, download the appropriate folder.
 ## Features List:
 
 ## How to Use:
-If no file has been passed into FastAnalysis, upon launching the page will only display the Upload File button. A FASTA file containing an appropriate extension is required to continue. Selecting the Upload File button will open the user's defaul file management system, only one file can be selected at a time.
+If no file has been passed into FastAnalysis, upon launching the page will only display the Upload File button. A FASTA file containing an appropriate extension is required to continue. Selecting the Upload File button will open the user's default file management system, only one file can be selected at a time.
 
 ![upload file icon](https://github.com/whyang15/BIOT671i-Group1-Capstone/assets/107033502/1149f267-2cf4-45b7-b305-82f4727169c9)
 
-Once a file has been selected the page updates to include the analysis options. FastAnalysis will determine whether the file has already had sequence headers previously modified, if so, the message “This file has already been analyzed, cannot commit results back to the file” will be displayed. Additionally, if the file has already been modified then the Commit and Tm features are disabled to prevent appending duplicate data.
+Once a file has been selected the page updates to include the analysis options. FastAnalysis will determine whether the file has already had sequence headers previously modified, if so, the message “This file has already been analyzed, cannot commit results back to the file” will be displayed. Additionally, if the file has already been modified then the Commit and Tm features are disabled to prevent appending duplicate data. Additionally, FastAnalysis supports FASTA analysis containing both amino acid and nucleotide sequences, and will determine which type sequences are contained within the file. Tm, ORF, and RE searches cannot be performed on amino acid sequences and will result in an error when attempted. 
 
 ### Tm (Melting Temperature) Dropdown: 
 This feature is a dropdown menu containing 4 options; Tm_None, Tm_Wallace, Tm_GC, and Tm_NN. If Tm is selected, then any other search or button selection will include Tm in the header data. It should be noted that if a file is uploaded that already has a header modified by FastAnalysis, Tm will not be appended to the header even if selected from the dropdown. The selected option will determine what method BioPython uses to calculate Tm. The exception is the Tm_None option. If Tm_None is selected Tm will not be included in the header data. Tm_None is the default option if the dropdown is not used. There is a 500bp cap to the Tm calculation. If a Tm method is selected, any sequences greater than 500bp long will not include Tm. This is to save on processing time required for longer sequences.
@@ -60,14 +60,14 @@ This is a button selectable by the user. ORF results are saved to the “FastAna
 ![ORF](https://github.com/whyang15/BIOT671i-Group1-Capstone/assets/107033502/ef05a8d8-5438-4341-8bbb-48cd2466b5de)
 
 ### Commit Results:
-This elevated button is selectable by the user. The headers of each sequence are modified to include additional data calculated by FastAnalysis. An error message will display to the user if the file has already been modified by FastAnalysis which states “This file has already been analyzed, cannot commit results back to the file”.
+This elevated button is selectable by the user. The headers of each sequence are modified to include additional data calculated by FastAnalysis. An error message will display to the user if the file has already been modified by FastAnalysis which states “This file has already been analyzed, cannot commit results back to the file”. See below for the applicable header formats, where "X" represents a calculated value and Tm is optional.
+
+Amino Acid: {original header} + || FA output[ record_num=X seqlen=X aa_counts={'A':X, 'C':X, 'D':X, 'E':X, 'F':X, 'G':X, 'H':X, 'I':X, 'K':X, 'L':X, 'M':X, 'N':X, 'P':X, 'Q':X, 'R':X, 'S':X, 'T':X, 'V':X, 'W':X, 'Y':X, '-':X, '*':X} hphilic_pct=x hphobic_pct=X ]
+
+Nucleic Acids: {original header} + || FA output[record_num=X seqlen=X base_counts={'A':X, 'C':X, 'G':X, 'T':X, 'U':X, 'N':X, '.':X, '-':X} AT%=X GC%=X Tm{'method selected'}=X'C']
 
 ![Commit_results](https://github.com/whyang15/BIOT671i-Group1-Capstone/assets/107033502/c3622f7d-0fac-44c4-8ee4-c70ef0b71282)
 
-## Testing:
-
 ## Limitations/Features Not Supported
 
-## Collaborators: (Roles?)
-
-
+It should be noted that during the testing phase of this project, FastAnalysis was unable to open a test file contianing 
