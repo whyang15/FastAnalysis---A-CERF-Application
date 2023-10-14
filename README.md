@@ -12,15 +12,9 @@ What makes FastAnalysis unique is that it offers several optional sequence analy
 
 A Mac and Windows desktop app is included in this repository, in addition to the original FastAnalysis scripts. The FastAnalysis scripts require Python 3.7 or greater, and require Flet and BioPython packages. Their are 5 scripts: FastAnalysis.py, aa_dna_main.py, aa_functions.py, fasta_functions.py, and nuc_functions.py. FastAnalysis.py contains main() and the GUI code. The remaining scripts contain the backend FASTA analysis. To run the scripts, ensure all scripts are contained within the same directory. FastAnalysis.py can be opened and ran in your IDE of your choice, or use the command line and navigate to the directory containing the script files and enter "python FastAnalysis.py". To pass a file directly into CERF, the command "python FastAnalysis.py {path to your file}" can be used.
 
-### Imported Packages/Modules:
+### Imported Python Packages/Modules:
 
-flet
-BioPython (Bio.SeqUtils, Bio.Seq, Bio.Restriction, Bio.SeqRecord)
-re
-os
-sys
-pathlib
-collections
+flet, BioPython (Bio.SeqUtils, Bio.Seq, Bio.Restriction, Bio.SeqRecord), re, os, sys, pathlib, collections
 
 NOTE: Only the following FASTA extensions types are supported by FastAnalysis: ".fasta", ".fa", ".fna", ".faa". 
 
@@ -28,10 +22,7 @@ NOTE: Only the following FASTA extensions types are supported by FastAnalysis: "
 
 To download the Mac or Windows App, download the appropriate folder. 
 
-
-## Features List:
-
-## How to Use:
+## Features List and How To's:
 If no file has been passed into FastAnalysis, upon launching the page will only display the Upload File button. A FASTA file containing an appropriate extension is required to continue. Selecting the Upload File button will open the user's default file management system, only one file can be selected at a time.
 
 ![upload file icon](https://github.com/whyang15/BIOT671i-Group1-Capstone/assets/107033502/1149f267-2cf4-45b7-b305-82f4727169c9)
