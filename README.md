@@ -1,8 +1,5 @@
 # <FastAnalysis - A CERF Application>
 
-## Badges
-https://img.shields.io/pypi/pyversions/FastAnalysis.py
-
 ## What is FastAnalysis?
 FastAnalysis is a stand alone application developed for Lab-Ally as our capstone project. Lab-Ally LLC is an Ohio based company, founded by CEO Rob Day in 2013. Lab-Ally requested an application that would work alongside their CERF 5.0 ELN software (https://lab-ally.com/products/cerf-eln/). CERF has a useful check-in and check-out feature that allows the file to be viewed and modified using outside applications, file modifications are traced when a file is checked back into CERF. Lab-Ally requested an application that could handle a type of bioinformatics file, and would analyze the files contents, perform useful analysis, then append the analysis data to the file where it could be used as metadata once checked back into CERF. The updated metadata makes the file more easily searchable, this is especially useful if a user is working with many files.
 
@@ -32,15 +29,17 @@ To download the Mac or Windows App, download the appropriate folder.
 
 
 ## Features List:
-The 
 
 ## How to Use:
+If no file has been passed into FastAnalysis, upon launching the page will only display the Upload File button. A FASTA file containing an appropriate extension is required to continue. 
+
+![upload file icon](https://github.com/whyang15/BIOT671i-Group1-Capstone/assets/107033502/1149f267-2cf4-45b7-b305-82f4727169c9)
+
+
 
 ## Testing:
 
 ## Limitations/Features Not Supported
-
-FastAnalysis contains 
 
 ## Collaborators: (Roles?)
 
