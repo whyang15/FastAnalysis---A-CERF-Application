@@ -7,7 +7,7 @@ import os
 import sys
 import re
 import pathlib
-import webbrowser
+import subprocess, platform
 from collections import Counter
 from Bio import SeqIO
 from Bio.SeqUtils import MeltingTemp as mt
@@ -133,6 +133,14 @@ def commit_results(filepath, data):
     myfile.write(data)
     myfile.close()
 
+    #Open the results file, method is based on OS.
+    if platform.system() == 'Darwin':
+        subprocess.call(('open', filepath))
+    elif platform.system() == 'Windows':
+        os.startfile(filepath)
+    else:
+        subprocess.call(('xdg-open', filepath))
+
 def make_results_folder(filepath, string, extension):
     
     #this should work on any OS (perk of using pathlib), but should test (so far works on Windows)
@@ -168,8 +176,16 @@ def searching(filepath, string):
     search_results, search_string = ff.search_for_string(filepath, string)
     ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
 
-    #Open the results file
-    webbrowser.open(additional_output_path)
+    #Open the results file, the method is based on the OS
+    #MacOS
+    if platform.system() == 'Darwin':
+        subprocess.call(('open', additional_output_path))
+    #Windows OS
+    elif platform.system() == 'Windows':
+        os.startfile(additional_output_path)
+    #Linux OS
+    else:
+        subprocess.call(('xdg-open', additional_output_path))
     
     #return path to result file, so user knows where it will be located
     return additional_output_path
@@ -188,8 +204,9 @@ def restriction_enzyme(filepath, string, tm_dropdown):
     new_header_sep = "FA output["
     rec_num = 0
     num_records = 0
-    
 
+    contains_nucleotides = False
+    
     with open(filepath, "r") as file:
         # get number of records in FASTA file.
         num_records = ff.get_num_records(filepath)  
@@ -203,7 +220,7 @@ def restriction_enzyme(filepath, string, tm_dropdown):
             if ff.is_dna_or_aa(seq, "nucleotides"):
                 
                 header = record.description
-                
+                contains_nucleotides = True
                 
                 #if the file has already had it's header updated, then no need to perform the analysis to make the new header.
                 #Can just use the existing header for the search results. This allows restriction enzyme sites to still be searched for, regardless of whether the file's header has been modified.
@@ -242,9 +259,6 @@ def restriction_enzyme(filepath, string, tm_dropdown):
                 # accumulate the formatted results:
                 re_results_output = re_results_output + ff.format_re_results(enzyme_names, positions_list, frags_list, new_header)
 
-                #write the results of the search to the new file
-                commit_results(additional_output_path, re_results_output)
-
                 #return the location of the results (full path)
                 message = str("The results of your search can be found at: " + additional_output_path)
                 
@@ -253,9 +267,9 @@ def restriction_enzyme(filepath, string, tm_dropdown):
                 message = str("File contains protein sequences. Restriction enzymes sites are found in nucleotide sequences.")
                 return message
                 
-    if additional_output_path != None:
-        #Open the results file
-        webbrowser.open(additional_output_path)
+    #If the file contains nucleotides: Write the results to the file.
+    if contains_nucleotides == True:
+        commit_results(additional_output_path, re_results_output)
         
     return message
 
@@ -271,7 +285,8 @@ def calculate_ORFs(filepath, string, tm_dropdown):
     rec_num = 0
     num_records = 0
 
-    #turn into a seperate method?
+    contains_nucleotides = False
+    
     with open(filepath, "r") as file:
 
         # get number of records in FASTA file.
@@ -286,6 +301,7 @@ def calculate_ORFs(filepath, string, tm_dropdown):
             if ff.is_dna_or_aa(seq, "nucleotides"):
                 
                 header = record.description
+                contains_nucleotides = True
                 
                 #if the file has already had it's header updated, then no need to perform the analysis to make the new header.
                 #Can just use the existing header for the search results. This allows restriction enzyme sites to still be searched for, regardless of whether the file's header has been modified.
@@ -327,9 +343,6 @@ def calculate_ORFs(filepath, string, tm_dropdown):
                 all_orf_records.append(orf_records_string)
                 all_orf_records_string = "\n".join(all_orf_records)
 
-                #write the results of the search to the new file
-                commit_results(additional_output_path, all_orf_records_string)
-
                 #return the location of the results (full path)
                 message = str("The results of your search can be found at: " + additional_output_path)
                 
@@ -338,8 +351,8 @@ def calculate_ORFs(filepath, string, tm_dropdown):
                 message = str("File contains amino acid sequences. ORFs are found in nucleotide sequences.")
                 return message
                 
-    if additional_output_path != None:
-        #Open the results file
-        webbrowser.open(additional_output_path)
+    #If the file contains nucleotides: Write the results to the file.
+    if contains_nucleotides == True:
+        commit_results(additional_output_path, all_orf_records_string)
         
     return message
