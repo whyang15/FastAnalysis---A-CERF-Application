@@ -7,6 +7,7 @@ import os
 import sys
 import re
 import pathlib
+import webbrowser
 from collections import Counter
 from Bio import SeqIO
 from Bio.SeqUtils import MeltingTemp as mt
@@ -152,7 +153,7 @@ def make_results_folder(filepath, string, extension):
     #By including the searched string in the name, this should make the results more easily findable by CERF once a system has been developed for adding the results as an attachment.
     additional_results_filename = (os.path.splitext(additional_results)[0]) + "_" + string + extension
     additional_output_path = os.path.join(desktop_folder, additional_results_filename)
-
+    
     return additional_output_path
     
     
@@ -160,13 +161,16 @@ def searching(filepath, string):
     #filepath is passed in from the GUI.
     #string will be the users search, passed in from the GUI
     #call method for creating the results folder if needed, returns full path of the file that results will be written to, will include the string in the file name
-    extension = "_addtional_results.txt"
+    extension = "_additional_results.txt"
     additional_output_path = make_results_folder(filepath, string, extension)
     search_results = []
 
     search_results, search_string = ff.search_for_string(filepath, string)
     ff.format_additional_results(additional_output_path, search_string.upper(), search_results)
 
+    #Open the results file
+    webbrowser.open(additional_output_path)
+    
     #return path to result file, so user knows where it will be located
     return additional_output_path
 
@@ -248,7 +252,11 @@ def restriction_enzyme(filepath, string, tm_dropdown):
             else:
                 message = str("File contains protein sequences. Restriction enzymes sites are found in nucleotide sequences.")
                 return message
-            
+                
+    if additional_output_path != None:
+        #Open the results file
+        webbrowser.open(additional_output_path)
+        
     return message
 
 def calculate_ORFs(filepath, string, tm_dropdown):
@@ -329,5 +337,9 @@ def calculate_ORFs(filepath, string, tm_dropdown):
             else:
                 message = str("File contains amino acid sequences. ORFs are found in nucleotide sequences.")
                 return message
-            
+                
+    if additional_output_path != None:
+        #Open the results file
+        webbrowser.open(additional_output_path)
+        
     return message
