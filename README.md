@@ -20,7 +20,7 @@ The application requires the following packages and modules installed prior to u
   - BioPython 1.81 (https://biopython.org/wiki/Download)
 
 Specific Python Packages/Modules imported for this application are the following:
-flet, BioPython (Bio.SeqUtils, Bio.Seq, Bio.Restriction, Bio.SeqRecord), re, os, sys, pathlib, collections
+flet, BioPython (Bio.SeqUtils, Bio.Seq, Bio.Restriction, Bio.SeqRecord), re, os, sys, pathlib, webbrowser, collections
 
 
 ## Installation:
