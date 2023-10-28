@@ -133,13 +133,16 @@ def find_orfs(seq):
                     end = len(working_seq) - (working_seq.index(coding_seq) + length_nt) + 1
                                  
                 orf_string = "ORF{} Strand{} Frame{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(count,strand,frame+1,start,end,str(length_nt),str(length_aa))
-=======
+
                 length_aa = len(translated_seq)
                 start = working_seq.index(coding_seq)+1
                 end = start + length_nt
                                     
                 orf_string = "ORF{} Strand{} ID{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(frame+1,strand,count,start,end,str(length_nt),str(length_aa))
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
+=======
 >>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
 =======
 >>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
