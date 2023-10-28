@@ -5,17 +5,6 @@ from Bio.SeqUtils import MeltingTemp as mt
 from Bio.Seq import Seq
 from Bio.Restriction import *
 
-def nuc_content(seq):
-    a = len(re.findall('A',seq))
-    t = len(re.findall('T',seq))
-    c = len(re.findall('C',seq))
-    g = len(re.findall('G',seq))
-    n = len(re.findall('N',seq))
-    gap = len(re.findall('-',seq))
-    at = len(re.findall('AT',seq))  # This only counts instances of AT dinucleotide, not counts of A + counts of T
-    gc = len(re.findall('GC',seq))  # This only counts instances of GC dinucleotide, not counts of G + counts of C
-    return a,t,c,g,n,gap,at,gc
-
 def get_dna_counts(seq):
     ''' Nucleotide code list currently does not include rare or ambigous bases: 
     R ( A or G), Y (C or T), S (G or C), W (A or T), K (G or T), M (A or C), B (C or G or T),
@@ -49,9 +38,6 @@ def cal_tm(seq, option):
     return round(cal,2)
 
 ## Restriction Enzyme Cut Sites:
-
-
-
 def reCut(sequence, rbatch):
     seq = Seq(sequence)
     rbatch_list = []  # initialize emptly list to store user input list of enzymes
@@ -97,19 +83,19 @@ def coding_region_finder(codon_list,frame):
     write = False
     temp_seq = ''
     count = 0
-    for pos in range (frame, len(codon_list)-2, 3):
+    for pos in range(frame, len(codon_list)-2, 3):
         codon = codon_list[pos:pos+3]
         if codon == 'ATG':
-            write = True
-        if write == True:
+            write = True    # set write flag to true.
+        if write == True:   # now that write is true, continue to add codons.
             temp_seq += codon
-        if codon in stop_codons:
+        if codon in stop_codons:    # if codon encountered is a stop codon, write is turned to false.
             write = False
-            if len(temp_seq)>3:         # if template length is > 30 bp as default.
+            if len(temp_seq)>30:         # if template length is > 30 bp as default.
                 coding_regions[count] = temp_seq
                 count += 1
             temp_seq = ''
-    if temp_seq != '' and 'ATG' in temp_seq:
+    if temp_seq != '' and 'ATG' in temp_seq and len(temp_seq) > 30:
         coding_regions[count] = temp_seq
     return coding_regions
 
@@ -123,26 +109,29 @@ def find_orfs(seq):
     orf_records = []
     orf_seq = ""
 
-    
     revCompSeq = Seq(seq).reverse_complement()
+    count = 1
     for strand, working_seq in [('+',seq), ('-', revCompSeq)]:
         working_seq = Seq(working_seq)
-        #count = 1
-        for frame in range (3):
+        for frame in range(3):
             seq_dict = nuc_functions.coding_region_finder(working_seq,frame)
-            #print(seq_dict)
-            count = 1
+            
             for seq in seq_dict:
                 
                 coding_seq = Seq(seq_dict[seq])
                 translated_seq = coding_seq.translate()
 
                 length_nt = len(coding_seq)
-                length_aa = len(translated_seq)
-                start = working_seq.index(coding_seq)+1
-                end = start + length_nt
-                                    
-                orf_string = "ORF{} Strand{} Frame{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(frame+1,strand,count,start,end,str(length_nt),str(length_aa))
+                length_aa = len(translated_seq) - 1    # length of translated sequence should not include stop codon.
+                
+                if strand == '+':
+                    start = working_seq.index(coding_seq) + 1
+                    end = start + length_nt - 1
+                elif strand == '-':
+                    start = len(working_seq) - working_seq.index(coding_seq)
+                    end = len(working_seq) - (working_seq.index(coding_seq) + length_nt) + 1
+                                 
+                orf_string = "ORF{} Strand{} Frame{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(count,strand,frame+1,start,end,str(length_nt),str(length_aa))
                 orf_seq = str(orf_string) + str(translated_seq) + "\n"
                                    
                 count +=1
