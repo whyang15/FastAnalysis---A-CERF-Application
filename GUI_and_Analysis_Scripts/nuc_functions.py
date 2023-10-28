@@ -91,7 +91,7 @@ def coding_region_finder(codon_list,frame):
             temp_seq += codon
         if codon in stop_codons:    # if codon encountered is a stop codon, write is turned to false.
             write = False
-            if len(temp_seq)>30:         # if template length is > 30 bp as default.
+            if len(temp_seq) >30:         # if template length is > 30 bp as default.
                 coding_regions[count] = temp_seq
                 count += 1
             temp_seq = ''
@@ -122,7 +122,6 @@ def find_orfs(seq):
                 translated_seq = coding_seq.translate()
 
                 length_nt = len(coding_seq)
-<<<<<<< HEAD
                 length_aa = len(translated_seq) - 1    # length of translated sequence should not include stop codon.
                 
                 if strand == '+':
@@ -134,18 +133,6 @@ def find_orfs(seq):
                                  
                 orf_string = "ORF{} Strand{} Frame{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(count,strand,frame+1,start,end,str(length_nt),str(length_aa))
 
-                length_aa = len(translated_seq)
-                start = working_seq.index(coding_seq)+1
-                end = start + length_nt
-                                    
-                orf_string = "ORF{} Strand{} ID{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(frame+1,strand,count,start,end,str(length_nt),str(length_aa))
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
-=======
->>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
-=======
->>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
                 orf_seq = str(orf_string) + str(translated_seq) + "\n"
                                    
                 count +=1
