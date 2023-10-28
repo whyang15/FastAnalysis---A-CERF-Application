@@ -139,6 +139,9 @@ def find_orfs(seq):
                 end = start + length_nt
                                     
                 orf_string = "ORF{} Strand{} ID{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(frame+1,strand,count,start,end,str(length_nt),str(length_aa))
+<<<<<<< HEAD
+>>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
+=======
 >>>>>>> f3f6afef79915ad02d92d5bad65ecbdff4d9e992
                 orf_seq = str(orf_string) + str(translated_seq) + "\n"
                                    
