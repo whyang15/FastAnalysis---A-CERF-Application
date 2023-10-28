@@ -105,7 +105,7 @@ def coding_region_finder(codon_list,frame):
             temp_seq += codon
         if codon in stop_codons:
             write = False
-            if len(temp_seq)>3:         # if template length is > 30 bp as default.
+            if len(temp_seq)>30:         # if template length is > 30 bp as default.
                 coding_regions[count] = temp_seq
                 count += 1
             temp_seq = ''
@@ -142,7 +142,7 @@ def find_orfs(seq):
                 start = working_seq.index(coding_seq)+1
                 end = start + length_nt
                                     
-                orf_string = "ORF{} Strand{} Frame{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(frame+1,strand,count,start,end,str(length_nt),str(length_aa))
+                orf_string = "ORF{} Strand{} ID{} StartPos:{} EndPos:{} Length(nt|aa):{}|{} \n".format(frame+1,strand,count,start,end,str(length_nt),str(length_aa))
                 orf_seq = str(orf_string) + str(translated_seq) + "\n"
                                    
                 count +=1
